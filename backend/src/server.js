@@ -3,12 +3,12 @@ const cors = require("cors");
 const pool = require("./db");
 const generateCode = require("./utils/generateCode");
 require("dotenv").config();
-
+const authRoutes = require("./routes/auth");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
     res.json({
         message: "URL Shortener API is running",
@@ -32,10 +32,10 @@ app.get("/test-db", async (req, res) => {
     }
 });
 
-app.post("/api/urls", async (req, res) => {
+app.post("/api/urls", authenticateToken, async (req, res) => {
     try {
         const { url } = req.body;
-
+             const userId = req.user.userId;
         if (!url) {
             return res.status(400).json({
                 error: "URL is required",
@@ -63,12 +63,13 @@ app.post("/api/urls", async (req, res) => {
         const shortCode = generateCode();
 
         // 4. Store new URL
-        const result = await pool.query(
-            `INSERT INTO urls (short_code, original_url)
-             VALUES ($1, $2)
-             RETURNING short_code, original_url`,
-            [shortCode, url]
-        );
+      const result = await pool.query(
+    `INSERT INTO urls
+     (user_id, short_code, original_url)
+     VALUES ($1, $2, $3)
+     RETURNING short_code, original_url`,
+    [userId, shortCode, url]
+);
 
         // 5. Return new short URL
         res.status(201).json({
