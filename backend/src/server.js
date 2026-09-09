@@ -42,8 +42,27 @@ app.post("/api/urls", async (req, res) => {
             });
         }
 
+        // 1. Check whether URL already exists
+        const existingUrl = await pool.query(
+            `SELECT short_code
+             FROM urls
+             WHERE original_url = $1`,
+            [url]
+        );
+
+        // 2. If it exists, return existing short code
+        if (existingUrl.rows.length > 0) {
+            return res.status(200).json({
+                shortUrl: `http://localhost:5000/${existingUrl.rows[0].short_code}`,
+                originalUrl: url,
+                existing: true
+            });
+        }
+
+        // 3. URL doesn't exist → generate new code
         const shortCode = generateCode();
 
+        // 4. Store new URL
         const result = await pool.query(
             `INSERT INTO urls (short_code, original_url)
              VALUES ($1, $2)
@@ -51,13 +70,15 @@ app.post("/api/urls", async (req, res) => {
             [shortCode, url]
         );
 
+        // 5. Return new short URL
         res.status(201).json({
             shortUrl: `http://localhost:5000/${result.rows[0].short_code}`,
             originalUrl: result.rows[0].original_url,
+            existing: false
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("CREATE URL ERROR:", error);
 
         res.status(500).json({
             error: "Failed to create short URL",
