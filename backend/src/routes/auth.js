@@ -1,7 +1,7 @@
-const express = require("express");
-const bcrypt = require("bcrypt");
-const pool = require("../db");
-
+import express from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import pool from "../db.js";
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
@@ -111,10 +111,10 @@ router.post("/login", async (req, res) => {
         console.error("LOGIN ERROR:", error);
 
         res.status(500).json({
-            error: "Login failed",
+            error: error.message,
         });
     }
 });
 
 
-module.exports = router;
+export default router;
