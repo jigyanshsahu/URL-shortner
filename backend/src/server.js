@@ -163,6 +163,7 @@ app.delete("/api/urls/:id", authenticateToken, async (req, res) => {
              RETURNING id, short_code, original_url`,
             [id, userId]
         );
+        await redis.del(`url:${result.rows[0].short_code}`);
 
         if (result.rows.length === 0) {
             return res.status(404).json({
