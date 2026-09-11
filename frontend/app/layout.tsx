@@ -1,33 +1,39 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "./context/AuthContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Shortly — Fast, Reliable & Scalable URL Shortener",
+  title: "Linkly — Scalable URL Infrastructure & Real-Time Analytics",
   description:
-    "Transform long links into short, memorable URLs with real-time click tracking, fast redirects, and analytics.",
+    "Lightning-fast URL shortening, custom branded aliases, automated expiration policies, dynamic QR codes, and sub-10ms global edge redirects.",
   keywords: [
+    "Linkly",
     "URL shortener",
     "short link",
-    "link shortener",
+    "vanity url",
     "click analytics",
-    "scalable url shortener",
+    "QR codes",
+    "edge redirect",
+    "Redis",
   ],
-  authors: [{ name: "Shortly" }],
+  authors: [{ name: "Linkly" }],
   openGraph: {
-    title: "Shortly — Scalable URL Shortener",
+    title: "Linkly — Scalable URL Infrastructure & Real-Time Analytics",
     description:
-      "Transform long links into short, memorable URLs with real-time click tracking.",
+      "Lightning-fast URL shortening, custom branded aliases, automated expiration policies, dynamic QR codes, and sub-10ms global edge redirects.",
     type: "website",
   },
 };
@@ -40,10 +46,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-100 selection:bg-indigo-500 selection:text-white font-sans">
-        {children}
+      <body className="min-h-full flex flex-col bg-surface text-on-surface font-sans selection:bg-primary-container selection:text-on-primary">
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

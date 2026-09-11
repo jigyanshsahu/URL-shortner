@@ -8,11 +8,35 @@ import authenticateToken from "./middleware/auth.js";
 import authRoutes from "./routes/auth.js";
 import cleanupExpiredUrls from "./jobs/cleanupExpiredUrls.js";
 import { connectRedis } from "./redis.js";
-
+import clickQueue from "./queues/clickQueue.js";
+import { rateLimit } from "./middleware/rateLimit.js";
+import QRCode from "qrcode";
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use(
+    "/api/auth/login",
+    rateLimit({
+        limit: 5,
+        windowSeconds: 60,
+    })
+);
+app.use(
+    "/api/auth/register",
+    rateLimit({
+        limit: 3,
+        windowSeconds: 60,
+    })
+);
+app.use(
+    "/api/urls",
+    rateLimit({
+        limit: 20,
+        windowSeconds: 60,
+    })
+);
 app.use("/api/auth", authRoutes);
 cron.schedule("* * * * *", () => {
     cleanupExpiredUrls();
@@ -40,7 +64,12 @@ app.get("/test-db", async (req, res) => {
     }
 });
 
-app.post("/api/urls", authenticateToken, async (req, res) => {
+app.post("/api/urls", authenticateToken,
+     rateLimit({
+        limit: 20,
+        windowSeconds: 60,
+    }),
+    async (req, res) => {
     try {
         const { url, expiresAt, alias } = req.body;
         const userId = req.user.userId;
@@ -152,6 +181,28 @@ app.post("/api/urls", authenticateToken, async (req, res) => {
         });
     }
 });
+
+app.get("/api/urls", authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const result = await pool.query(
+            `SELECT id, short_code, original_url, expires_at, created_at, click_count
+             FROM urls
+             WHERE user_id = $1
+             ORDER BY created_at DESC`,
+            [userId]
+        );
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error("FETCH URLS ERROR:", error);
+        res.status(500).json({
+            error: "Failed to fetch URLs"
+        });
+    }
+});
+
 app.delete("/api/urls/:id", authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
@@ -414,19 +465,67 @@ app.get(
         }
     }
 );
+app.get(
+    "/api/urls/:id/qr",
+    authenticateToken,
+    async (req, res) => {
+        try {
+            const { id } = req.params;
+            const userId = req.user.userId;
+
+            // Make sure this URL belongs to the logged-in user
+            const result = await pool.query(
+                `SELECT id, short_code
+                 FROM urls
+                 WHERE id = $1
+                 AND user_id = $2`,
+                [id, userId]
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({
+                    error: "URL not found"
+                });
+            }
+
+            const url = result.rows[0];
+
+            const shortUrl =
+                `${process.env.BASE_URL}/${url.short_code}`;
+
+            // Generate QR as a PNG data URL
+            const qrCode = await QRCode.toDataURL(shortUrl, {
+                width: 500,
+                margin: 2,
+            });
+
+            res.json({
+                shortUrl,
+                qrCode
+            });
+
+        } catch (error) {
+            console.error("QR CODE ERROR:", error);
+
+            res.status(500).json({
+                error: "Failed to generate QR code"
+            });
+        }
+    }
+);
 app.get("/:shortCode", async (req, res) => {
     try {
         const { shortCode } = req.params;
 
         const cacheKey = `url:${shortCode}`;
 
-        // 1. Check Redis first
+        // 1. Check Redis
         const cachedUrl = await redis.get(cacheKey);
 
         if (cachedUrl) {
-            const url = JSON.parse(cachedUrl);
-
             console.log("Redis HIT:", shortCode);
+
+            const url = JSON.parse(cachedUrl);
 
             // Check expiration
             if (
@@ -440,29 +539,17 @@ app.get("/:shortCode", async (req, res) => {
                 );
             }
 
-            // Record click
-            await pool.query(
-                `INSERT INTO url_clicks
-                    (url_id, ip_address, user_agent, referrer)
-                 VALUES
-                    ($1, $2, $3, $4)`,
-                [
-                    url.id,
+            // Send click event to background queue
+            await clickQueue.add("record-click", {
+                urlId: url.id,
+                ipAddress:
                     req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
-                        req.socket.remoteAddress,
-                    req.get("user-agent"),
-                    req.get("referer") || null
-                ]
-            );
+                    req.socket.remoteAddress,
+                userAgent: req.get("user-agent"),
+                referrer: req.get("referer") || null,
+            });
 
-            // Increment click count
-            await pool.query(
-                `UPDATE urls
-                 SET click_count = click_count + 1
-                 WHERE id = $1`,
-                [url.id]
-            );
-
+            // Redirect immediately
             return res.redirect(url.original_url);
         }
 
@@ -494,7 +581,7 @@ app.get("/:shortCode", async (req, res) => {
             );
         }
 
-        // 4. Cache URL in Redis
+        // 4. Calculate Redis TTL
         let ttl = 3600;
 
         if (url.expires_at) {
@@ -505,36 +592,24 @@ app.get("/:shortCode", async (req, res) => {
             ttl = Math.max(1, secondsUntilExpiration);
         }
 
+        // 5. Cache URL
         await redis.set(
             cacheKey,
             JSON.stringify(url),
             {
-                EX: ttl
+                EX: ttl,
             }
         );
 
-        // 5. Record click
-        await pool.query(
-            `INSERT INTO url_clicks
-                (url_id, ip_address, user_agent, referrer)
-             VALUES
-                ($1, $2, $3, $4)`,
-            [
-                url.id,
+        // 6. Add click to background queue
+        await clickQueue.add("record-click", {
+            urlId: url.id,
+            ipAddress:
                 req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
-                    req.socket.remoteAddress,
-                req.get("user-agent"),
-                req.get("referer") || null
-            ]
-        );
-
-        // 6. Increment clicks
-        await pool.query(
-            `UPDATE urls
-             SET click_count = click_count + 1
-             WHERE id = $1`,
-            [url.id]
-        );
+                req.socket.remoteAddress,
+            userAgent: req.get("user-agent"),
+            referrer: req.get("referer") || null,
+        });
 
         // 7. Redirect
         res.redirect(url.original_url);

@@ -18,10 +18,10 @@ export default function AuthInput({
   const hasError = field.state.meta.isTouched && !field.state.meta.isValid;
 
   return (
-    <div>
+    <div className="flex flex-col gap-1.5">
       <label
         htmlFor={name}
-        className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-zinc-300"
+        className="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant font-mono"
       >
         {label}
       </label>
@@ -34,15 +34,15 @@ export default function AuthInput({
         onBlur={field.handleBlur}
         onChange={(e) => field.handleChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full rounded-xl border bg-zinc-950/80 px-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:ring-1 ${
+        className={`w-full rounded-xl border bg-surface-container-low px-4 py-2.5 text-xs sm:text-sm text-on-surface placeholder:text-outline outline-none transition focus:bg-surface-container-lowest ${
           hasError
-            ? "border-red-500/80 focus:border-red-500 focus:ring-red-500"
-            : "border-zinc-700 focus:border-indigo-500 focus:ring-indigo-500"
+            ? "border-error focus:border-error"
+            : "border-outline-variant/40 focus:border-primary-container"
         }`}
       />
 
       {hasError && (
-        <p className="mt-1.5 text-xs text-red-400 font-medium">
+        <p className="text-xs text-error font-medium">
           {field.state.meta.errors
             .map((error) => error?.message ?? String(error))
             .join(", ")}

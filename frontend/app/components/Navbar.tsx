@@ -2,140 +2,157 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Logo from "./Logo";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
+  const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-xl font-bold tracking-tight text-white transition hover:opacity-90"
-        >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-cyan-400 text-sm font-black text-white shadow-md shadow-indigo-500/20">
-            S
-          </span>
-          <span>Shortly</span>
-        </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-surface/85 backdrop-blur-xl border-b border-outline-variant/30 transition-all">
+      <div className="h-16 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
+        {/* Brand & Desktop Links */}
+        <div className="flex items-center gap-8">
+          <Logo size="md" href="/" />
 
-        {/* Desktop Nav Links */}
-        <div className="hidden items-center gap-8 md:flex">
-          <a
-            href="#shortener"
-            className="text-sm font-medium text-zinc-400 transition hover:text-white"
-          >
-            Shorten
-          </a>
-          <a
-            href="#analytics"
-            className="text-sm font-medium text-zinc-400 transition hover:text-white"
-          >
-            Analytics
-          </a>
-          <a
-            href="#features"
-            className="text-sm font-medium text-zinc-400 transition hover:text-white"
-          >
-            Features
-          </a>
-        </div>
-
-        {/* Desktop Actions */}
-        <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/login"
-            className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
-          >
-            Sign in
-          </Link>
-
-          <Link
-            href="/register"
-            className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-zinc-950 shadow-sm transition hover:bg-zinc-200"
-          >
-            Get Started
-          </Link>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          type="button"
-          aria-label="Toggle navigation menu"
-          className="inline-flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:bg-zinc-900 hover:text-white md:hidden"
-        >
-          {mobileMenuOpen ? (
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          ) : (
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          )}
-        </button>
-      </nav>
-
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="border-b border-zinc-800 bg-zinc-950/95 px-6 py-4 backdrop-blur-lg md:hidden">
-          <div className="flex flex-col space-y-3 pb-3">
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-on-surface-variant">
             <a
               href="#shortener"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-md px-3 py-2 text-base font-medium text-zinc-300 hover:bg-zinc-900 hover:text-white"
+              className="hover:text-on-surface transition-colors"
             >
-              Shorten
-            </a>
-            <a
-              href="#analytics"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-md px-3 py-2 text-base font-medium text-zinc-300 hover:bg-zinc-900 hover:text-white"
-            >
-              Analytics
+              Shortener
             </a>
             <a
               href="#features"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-md px-3 py-2 text-base font-medium text-zinc-300 hover:bg-zinc-900 hover:text-white"
+              className="hover:text-on-surface transition-colors"
             >
               Features
             </a>
-          </div>
-          <div className="flex flex-col gap-2 border-t border-zinc-800 pt-4">
-            <Link
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full rounded-lg border border-zinc-800 py-2.5 text-center text-sm font-medium text-zinc-200 hover:bg-zinc-900"
+            <a
+              href="#architecture"
+              className="hover:text-on-surface transition-colors"
             >
-              Sign in
-            </Link>
+              Architecture
+            </a>
             <Link
-              href="/register"
+              href="/dashboard"
+              className="hover:text-on-surface transition-colors flex items-center gap-1"
+            >
+              <span>Console</span>
+              <span className="font-mono text-[10px] px-1 py-0.2 rounded bg-surface-container-high text-primary font-semibold">
+                Live
+              </span>
+            </Link>
+          </nav>
+        </div>
+
+        {/* Right side CTAs */}
+        <div className="hidden sm:flex items-center gap-3">
+          {isAuthenticated ? (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-primary bg-primary-container hover:bg-primary px-4 py-2 rounded-xl shadow-xs transition-all active:scale-[0.98]"
+              >
+                <span className="material-symbols-outlined text-[18px]">grid_view</span>
+                <span>Dashboard ({user?.name || "Jigyansh"})</span>
+              </Link>
+              <button
+                onClick={logout}
+                type="button"
+                className="text-xs text-on-surface-variant hover:text-error transition-colors px-2 py-1"
+              >
+                Log out
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/login"
+                className="text-xs font-medium text-on-surface-variant hover:text-on-surface px-3 py-2 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-primary bg-primary-container hover:bg-primary px-4 py-2 rounded-xl shadow-xs transition-all active:scale-[0.98]"
+              >
+                <span>Launch Console</span>
+                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile menu toggle */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          type="button"
+          className="sm:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high"
+          aria-label="Toggle Navigation"
+        >
+          <span className="material-symbols-outlined text-[24px]">
+            {mobileMenuOpen ? "close" : "menu"}
+          </span>
+        </button>
+      </div>
+
+      {/* Mobile dropdown */}
+      {mobileMenuOpen && (
+        <div className="sm:hidden px-6 py-4 bg-surface border-b border-outline-variant/30 flex flex-col gap-3">
+          <a
+            href="#shortener"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-sm font-medium text-on-surface-variant hover:text-on-surface"
+          >
+            Shortener
+          </a>
+          <a
+            href="#features"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-sm font-medium text-on-surface-variant hover:text-on-surface"
+          >
+            Features
+          </a>
+          <a
+            href="#architecture"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-sm font-medium text-on-surface-variant hover:text-on-surface"
+          >
+            Architecture
+          </a>
+          <Link
+            href="/dashboard"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Dashboard Console
+          </Link>
+          <div className="pt-2 border-t border-outline-variant/30 flex items-center justify-between">
+            {isAuthenticated ? (
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                }}
+                className="text-xs text-error font-medium"
+              >
+                Sign out ({user?.name})
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-xs font-semibold text-primary"
+              >
+                Sign In / Demo
+              </Link>
+            )}
+            <Link
+              href="/dashboard"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full rounded-lg bg-white py-2.5 text-center text-sm font-semibold text-zinc-950 hover:bg-zinc-200"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary-container text-on-primary"
             >
               Get Started
             </Link>

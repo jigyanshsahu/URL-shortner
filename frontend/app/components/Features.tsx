@@ -1,68 +1,91 @@
-import FeatureCard from "./FeatureCard";
-
-const features = [
-  {
-    icon: "⚡",
-    title: "Lightning Redirects",
-    description: "Built for speed. Optimized 302 HTTP redirects ensure sub-millisecond route resolution.",
-    badge: "Fast",
-  },
-  {
-    icon: "📊",
-    title: "Live Click Analytics",
-    description: "Track total clicks and engagement in real-time as users open your short links.",
-    badge: "Real-time",
-  },
-  {
-    icon: "🔀",
-    title: "Smart Deduplication",
-    description: "Automatically reuses existing short codes for identical URLs to save space and keep codes clean.",
-    badge: "Intelligent",
-  },
-  {
-    icon: "📱",
-    title: "Instant QR Codes",
-    description: "Generate scannable QR codes for your short links on the fly for printed media and mobile apps.",
-    badge: "Convenient",
-  },
-  {
-    icon: "🛡️",
-    title: "Secure & Resilient",
-    description: "SQL-injection safe parameterized queries and validated URLs keep your links safe.",
-    badge: "Reliable",
-  },
-  {
-    icon: "🚀",
-    title: "Scalable Architecture",
-    description: "Powered by Node.js, Express, and PostgreSQL designed to effortlessly handle high request throughput.",
-    badge: "Scalable",
-  },
-];
+"use client";
 
 export default function Features() {
+  const features = [
+    {
+      icon: "bolt",
+      title: "Sub-10ms Edge Redirects",
+      desc: "In-memory Redis layer ensures instantaneous lookups before hitting PostgreSQL, minimizing redirect latency across the globe.",
+      tag: "PERFORMANCE",
+    },
+    {
+      icon: "branding_watermark",
+      title: "Custom Vanity Aliases",
+      desc: "Claim branded, memorable slugs like linkly.app/launch for higher click-through rates and campaign brand consistency.",
+      tag: "BRANDING",
+    },
+    {
+      icon: "timer",
+      title: "Automated Link Expiration",
+      desc: "Schedule links to expire after 24h, 7 days, or specific dates. Background cron workers automatically invalidate dead links.",
+      tag: "LIFECYCLE",
+    },
+    {
+      icon: "insights",
+      title: "Real-Time Click Telemetry",
+      desc: "Asynchronous BullMQ queues capture referrer, device, browser, and geo-data without adding latency to the user redirect.",
+      tag: "TELEMETRY",
+    },
+    {
+      icon: "qr_code_2",
+      title: "Dynamic High-Res QR Codes",
+      desc: "Instantly generate crisp SVG and PNG QR codes ready for marketing print, slides, or digital displays.",
+      tag: "UTILITY",
+    },
+    {
+      icon: "shield_lock",
+      title: "Built-In Edge Rate Limiting",
+      desc: "Sliding-window Redis rate-limiters prevent abuse and bot spam, safeguarding API reliability for production workloads.",
+      tag: "SECURITY",
+    },
+  ];
+
   return (
-    <section id="features" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-      <div className="text-center max-w-2xl mx-auto mb-14">
-        <p className="text-xs font-bold tracking-widest text-indigo-400 uppercase">
-          Features
-        </p>
-        <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-          Everything you need to scale your links.
+    <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+      <div className="text-center max-w-3xl mx-auto mb-16">
+        <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold px-3 py-1 rounded-full bg-surface-container-high">
+          ENGINEERING ARCHITECTURE
+        </span>
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight mt-4">
+          Engineered for scale, speed, and precision
         </h2>
-        <p className="mt-3 text-sm text-zinc-400">
-          Built with cutting-edge technologies to guarantee reliability, performance, and simplicity.
+        <p className="text-sm sm:text-base text-on-surface-variant mt-3">
+          Every component in Linkly is tuned to provide microsecond response times and high availability.
         </p>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {features.map((feature) => (
-          <FeatureCard
-            key={feature.title}
-            icon={feature.icon}
-            title={feature.title}
-            description={feature.description}
-            badge={feature.badge}
-          />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {features.map((item, idx) => (
+          <div
+            key={idx}
+            className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 hover:border-primary-container/40 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-10 h-10 rounded-xl bg-primary-container/10 text-primary flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+                  <span className="material-symbols-outlined text-[22px]">
+                    {item.icon}
+                  </span>
+                </div>
+                <span className="font-mono text-[10px] font-bold tracking-wider text-outline px-2 py-0.5 rounded bg-surface-container-low">
+                  {item.tag}
+                </span>
+              </div>
+              <h3 className="text-base font-bold text-on-surface mb-2">
+                {item.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+                {item.desc}
+              </p>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-outline-variant/30 flex items-center text-xs font-semibold text-primary">
+              <span className="group-hover:mr-1 transition-all">Explore spec</span>
+              <span className="material-symbols-outlined text-[16px] ml-1">
+                arrow_forward
+              </span>
+            </div>
+          </div>
         ))}
       </div>
     </section>

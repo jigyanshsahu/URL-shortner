@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@tanstack/react-form": "^1.33.5",
+    "gsap": "^3.15.0",
     "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",

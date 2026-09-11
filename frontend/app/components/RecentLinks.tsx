@@ -1,226 +1,324 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { fetchUrls, ShortenedUrl } from "../lib/api";
+import { useEffect, useState, useMemo } from "react";
+import { fetchUrls, deleteUrl, ShortenedUrl } from "../lib/api";
+import { useAuth } from "../context/AuthContext";
 
 interface RecentLinksProps {
   refreshTrigger?: number;
+  onOpenAnalytics: (shortCode: string, id: string | number) => void;
+  onOpenQr: (shortCode: string, id: string | number) => void;
+  onOpenEdit: (item: ShortenedUrl) => void;
+  showAllControls?: boolean;
 }
 
-export default function RecentLinks({ refreshTrigger }: RecentLinksProps) {
+export default function RecentLinks({
+  refreshTrigger,
+  onOpenAnalytics,
+  onOpenQr,
+  onOpenEdit,
+  showAllControls = true,
+}: RecentLinksProps) {
+  const { token } = useAuth();
   const [links, setLinks] = useState<ShortenedUrl[]>([]);
   const [loading, setLoading] = useState(true);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-
-  const loadUrls = useCallback(() => {
-    setLoading(true);
-    fetchUrls()
-      .then((data) => {
-        setLinks(data);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "expired">("all");
+  const [sortBy, setSortBy] = useState<"newest" | "clicks">("newest");
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
 
   useEffect(() => {
-    let ignore = false;
-    fetchUrls().then((data) => {
-      if (!ignore) {
-        setLinks(data);
-        setLoading(false);
-      }
-    });
+    let isMounted = true;
+    fetchUrls(token)
+      .then((data) => {
+        if (isMounted) {
+          setLinks(data);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          console.error("Failed to load URLs:", err);
+          setLoading(false);
+        }
+      });
+
     return () => {
-      ignore = true;
+      isMounted = false;
     };
-  }, [refreshTrigger]);
+  }, [token, refreshTrigger]);
 
-  function copyToClipboard(shortCode: string) {
-    const fullUrl = `${window.location.protocol}//${window.location.hostname}:5000/${shortCode}`;
+  const copyToClipboard = (shortCode: string) => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+    const fullUrl = `${origin}/${shortCode}`;
     navigator.clipboard.writeText(fullUrl);
-    setCopiedId(shortCode);
-    setTimeout(() => setCopiedId(null), 2000);
-  }
+    setCopiedCode(shortCode);
+    setTimeout(() => setCopiedCode(null), 2000);
+  };
 
-  const totalClicks = links.reduce((sum, item) => sum + (Number(item.click_count) || 0), 0);
+  const handleDelete = async (id: string | number) => {
+    if (!confirm("Are you sure you want to delete this short link?")) return;
+    setDeletingId(id);
+
+    try {
+      await deleteUrl(id, token);
+      setLinks((prev) => prev.filter((item) => String(item.id) !== String(id)));
+    } catch (err) {
+      console.error("Failed to delete link:", err);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const isExpired = (item: ShortenedUrl) => {
+    if (!item.expires_at) return false;
+    return new Date(item.expires_at) < new Date();
+  };
+
+  const filteredLinks = useMemo(() => {
+    return links
+      .filter((item) => {
+        // Status filter
+        if (statusFilter === "active" && isExpired(item)) return false;
+        if (statusFilter === "expired" && !isExpired(item)) return false;
+
+        // Search filter
+        if (!searchQuery.trim()) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+          item.short_code.toLowerCase().includes(query) ||
+          item.original_url.toLowerCase().includes(query)
+        );
+      })
+      .sort((a, b) => {
+        if (sortBy === "clicks") {
+          return (b.click_count || 0) - (a.click_count || 0);
+        }
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+  }, [links, statusFilter, searchQuery, sortBy]);
 
   return (
-    <section id="analytics" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-      {/* Header & Stats Bar */}
-      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 px-3 py-1 text-xs font-medium text-indigo-400 mb-3">
-            <span>📊</span>
-            <span>Real-time Analytics</span>
+    <div className="w-full">
+      {/* Search and Filters Header */}
+      {showAllControls && (
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-[200px]">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-outline pointer-events-none">
+              search
+            </span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by alias or target URL..."
+              className="w-full h-9 pl-9 pr-8 rounded-xl bg-surface-container-low border border-outline-variant/30 text-xs text-on-surface placeholder:text-outline focus:border-primary-container focus:bg-surface-container-lowest focus:outline-none transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface text-xs"
+              >
+                ✕
+              </button>
+            )}
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Recent Links & Performance
-          </h2>
-          <p className="mt-2 max-w-xl text-sm text-zinc-400">
-            Track clicks and redirects live as visitors interact with your shortened links.
-          </p>
-        </div>
 
-        {/* Quick KPI stats */}
-        <div className="flex items-center gap-4">
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3">
-            <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">Total Links</p>
-            <p className="text-2xl font-bold text-white">{links.length}</p>
-          </div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3">
-            <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">Total Clicks</p>
-            <p className="text-2xl font-bold text-indigo-400">{totalClicks}</p>
-          </div>
-          <button
-            onClick={loadUrls}
-            disabled={loading}
-            title="Refresh links"
-            className="rounded-xl border border-zinc-800 bg-zinc-900 p-3 text-zinc-400 hover:text-white transition hover:bg-zinc-800 disabled:opacity-50"
-          >
-            <svg
-              className={`h-5 w-5 ${loading ? "animate-spin text-indigo-400" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
+          {/* Filter tabs & Sort */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center bg-surface-container-low p-1 rounded-xl border border-outline-variant/30">
+              <button
+                onClick={() => setStatusFilter("all")}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  statusFilter === "all"
+                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
+                    : "text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                All ({links.length})
+              </button>
+              <button
+                onClick={() => setStatusFilter("active")}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  statusFilter === "active"
+                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
+                    : "text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                Active ({links.filter((l) => !isExpired(l)).length})
+              </button>
+              <button
+                onClick={() => setStatusFilter("expired")}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  statusFilter === "expired"
+                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
+                    : "text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                Expired ({links.filter(isExpired).length})
+              </button>
+            </div>
 
-      {/* Table / List Container */}
-      <div className="mt-8 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/70 shadow-xl backdrop-blur-sm">
-        {loading && links.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-zinc-500">
-            <svg
-              className="h-8 w-8 animate-spin text-indigo-500"
-              fill="none"
-              viewBox="0 0 24 24"
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as "newest" | "clicks")}
+              className="h-9 px-3 rounded-xl bg-surface-container-low border border-outline-variant/30 text-xs font-medium text-on-surface-variant focus:outline-none cursor-pointer"
             >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8H4z"
-              />
-            </svg>
-            <p className="mt-3 text-sm">Loading links...</p>
+              <option value="newest">Sort: Newest</option>
+              <option value="clicks">Sort: Most Clicks</option>
+            </select>
           </div>
-        ) : links.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center px-4">
-            <div className="rounded-full bg-zinc-800/80 p-4 text-3xl">🔗</div>
-            <h4 className="mt-4 text-base font-semibold text-white">No shortened URLs yet</h4>
-            <p className="mt-1 text-sm text-zinc-400 max-w-sm">
-              Use the form above to shorten your first link and start collecting click analytics.
+        </div>
+      )}
+
+      {/* Table Container */}
+      <div className="w-full bg-surface-container-lowest rounded-2xl border border-outline-variant/40 shadow-xs overflow-hidden">
+        {loading ? (
+          <div className="p-12 flex flex-col items-center justify-center text-on-surface-variant gap-3">
+            <span className="material-symbols-outlined text-[32px] text-primary animate-spin">
+              sync
+            </span>
+            <span className="text-xs font-medium">Loading link telemetry...</span>
+          </div>
+        ) : filteredLinks.length === 0 ? (
+          <div className="p-12 flex flex-col items-center justify-center text-center">
+            <div className="w-12 h-12 rounded-2xl bg-surface-container-high flex items-center justify-center text-outline mb-3">
+              <span className="material-symbols-outlined text-[24px]">link_off</span>
+            </div>
+            <p className="text-sm font-semibold text-on-surface">No links found</p>
+            <p className="text-xs text-on-surface-variant mt-1 max-w-sm">
+              {searchQuery
+                ? "No shortened links match your filter criteria."
+                : "Create your first shortened link to view performance telemetry."}
             </p>
-            <a
-              href="#shortener"
-              className="mt-5 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 transition"
-            >
-              Shorten a link now
-            </a>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-zinc-300">
-              <thead className="border-b border-zinc-800 bg-zinc-950/60 text-xs uppercase tracking-wider text-zinc-400">
-                <tr>
-                  <th scope="col" className="px-6 py-4 font-semibold">Short Link</th>
-                  <th scope="col" className="px-6 py-4 font-semibold">Original Destination</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-center">Clicks</th>
-                  <th scope="col" className="px-6 py-4 font-semibold">Created</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-right">Action</th>
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="h-10 bg-surface-container-low/60 border-b border-outline-variant/30 text-[11px] uppercase font-bold text-outline tracking-wider font-mono">
+                  <th className="py-2.5 px-4 font-semibold">Short Link</th>
+                  <th className="py-2.5 px-4 font-semibold hidden md:table-cell">
+                    Destination URL
+                  </th>
+                  <th className="py-2.5 px-4 font-semibold text-center">Clicks</th>
+                  <th className="py-2.5 px-4 font-semibold text-center">Status</th>
+                  <th className="py-2.5 px-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
-                {links.map((link) => {
-                  const targetUrl = link.original_url;
-                  const shortUrl = `http://localhost:5000/${link.short_code}`;
-                  const createdDate = link.created_at
-                    ? new Date(link.created_at).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : "Just now";
+              <tbody className="divide-y divide-outline-variant/20">
+                {filteredLinks.map((item) => {
+                  const expired = isExpired(item);
+                  const isCopied = copiedCode === item.short_code;
+                  const isDeleting = deletingId === item.id;
 
                   return (
                     <tr
-                      key={link.id || link.short_code}
-                      className="transition hover:bg-zinc-800/40"
+                      key={item.id}
+                      className={`hover:bg-surface-container-low/50 transition-colors ${
+                        isDeleting ? "opacity-30" : ""
+                      }`}
                     >
-                      {/* Short Link */}
-                      <td className="whitespace-nowrap px-6 py-4">
+                      {/* Short URL & alias */}
+                      <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2">
-                          <a
-                            href={shortUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-medium text-indigo-400 hover:text-indigo-300 hover:underline"
+                          <button
+                            onClick={() => copyToClipboard(item.short_code)}
+                            type="button"
+                            title="Copy short link"
+                            className="font-mono text-xs font-bold text-primary hover:underline flex items-center gap-1 group"
                           >
-                            /{link.short_code}
-                          </a>
+                            <span>linkly.app/{item.short_code}</span>
+                            <span className="material-symbols-outlined text-[14px] text-outline group-hover:text-primary">
+                              {isCopied ? "check" : "content_copy"}
+                            </span>
+                          </button>
+                        </div>
+                        <div className="text-[11px] text-outline font-mono mt-0.5 md:hidden truncate max-w-[200px]">
+                          {item.original_url}
                         </div>
                       </td>
 
-                      {/* Original URL */}
-                      <td className="max-w-xs truncate px-6 py-4 text-zinc-400 sm:max-w-md">
-                        <a
-                          href={targetUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title={targetUrl}
-                          className="truncate hover:text-zinc-200 hover:underline block"
-                        >
-                          {targetUrl}
-                        </a>
+                      {/* Destination URL */}
+                      <td className="py-3.5 px-4 hidden md:table-cell max-w-xs lg:max-w-md">
+                        <p className="text-xs text-on-surface-variant truncate">
+                          {item.original_url}
+                        </p>
                       </td>
 
                       {/* Clicks */}
-                      <td className="whitespace-nowrap px-6 py-4 text-center">
-                        <span className="inline-flex items-center rounded-full bg-zinc-800 px-2.5 py-0.5 text-xs font-semibold text-zinc-200">
-                          🔥 {link.click_count || 0}
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center gap-1 font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-surface-container-high text-on-surface">
+                          <span className="material-symbols-outlined text-[14px] text-primary">
+                            ads_click
+                          </span>
+                          {item.click_count || 0}
                         </span>
                       </td>
 
-                      {/* Date */}
-                      <td className="whitespace-nowrap px-6 py-4 text-xs text-zinc-500">
-                        {createdDate}
+                      {/* Status */}
+                      <td className="py-3.5 px-4 text-center">
+                        {expired ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-surface-container-high text-on-surface-variant">
+                            <span className="w-1.5 h-1.5 rounded-full bg-outline" />
+                            Expired
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-tertiary-container/15 text-tertiary-container border border-tertiary-container/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse" />
+                            Active
+                          </span>
+                        )}
                       </td>
 
                       {/* Actions */}
-                      <td className="whitespace-nowrap px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
                           <button
+                            onClick={() => onOpenQr(item.short_code, item.id)}
                             type="button"
-                            onClick={() => copyToClipboard(link.short_code)}
-                            className="rounded-lg border border-zinc-700 bg-zinc-800/80 px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition hover:bg-zinc-700 hover:text-white"
+                            title="QR Code"
+                            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
                           >
-                            {copiedId === link.short_code ? "✓ Copied" : "Copy"}
+                            <span className="material-symbols-outlined text-[18px]">
+                              qr_code_2
+                            </span>
                           </button>
-                          <a
-                            href={shortUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-lg bg-zinc-800 px-2.5 py-1.5 text-xs font-medium text-indigo-400 hover:bg-zinc-700 hover:text-indigo-300"
+
+                          <button
+                            onClick={() => onOpenAnalytics(item.short_code, item.id)}
+                            type="button"
+                            title="Analytics"
+                            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors"
                           >
-                            Test ↗
-                          </a>
+                            <span className="material-symbols-outlined text-[18px]">
+                              insights
+                            </span>
+                          </button>
+
+                          <button
+                            onClick={() => onOpenEdit(item)}
+                            type="button"
+                            title="Edit URL"
+                            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">
+                              edit
+                            </span>
+                          </button>
+
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            type="button"
+                            title="Delete"
+                            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">
+                              delete
+                            </span>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -231,6 +329,6 @@ export default function RecentLinks({ refreshTrigger }: RecentLinksProps) {
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 }
