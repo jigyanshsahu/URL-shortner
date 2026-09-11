@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAuth } from "../context/AuthContext";
+import { SearchIcon, PlusIcon } from "./Icons";
 
 interface ConsoleHeaderProps {
   pageTitle: string;
@@ -36,9 +37,9 @@ export default function ConsoleHeader({
         {/* Search Bar */}
         {onSearchChange !== undefined && (
           <div className="relative hidden sm:flex items-center">
-            <span className="material-symbols-outlined absolute left-3 text-[18px] text-outline pointer-events-none">
-              search
-            </span>
+            <div className="absolute left-3 pointer-events-none text-outline">
+              <SearchIcon size={18} />
+            </div>
             <input
               type="text"
               value={searchValue || ""}
@@ -59,7 +60,7 @@ export default function ConsoleHeader({
             type="button"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-primary bg-primary-container hover:bg-primary px-3.5 py-2 rounded-xl shadow-xs transition-all active:scale-[0.98]"
           >
-            <span className="material-symbols-outlined text-[18px]">add</span>
+            <PlusIcon size={18} />
             <span className="hidden xs:inline">Create Link</span>
           </button>
         )}

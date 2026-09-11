@@ -46,9 +46,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-surface text-on-surface font-sans selection:bg-primary-container selection:text-on-primary">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-surface text-on-surface font-sans selection:bg-primary-container selection:text-on-primary"
+      >
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

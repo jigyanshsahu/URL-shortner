@@ -3,6 +3,18 @@
 import React, { useState } from "react";
 import { createShortUrl, isValidUrl, ShortenedUrl } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import {
+  LinkIcon,
+  CloseIcon,
+  CheckCircleIcon,
+  CheckIcon,
+  CopyIcon,
+  QrCodeIcon,
+  PlusIcon,
+  ErrorIcon,
+  BoltIcon,
+  RefreshIcon,
+} from "./Icons";
 
 interface CreateLinkModalProps {
   isOpen: boolean;
@@ -107,7 +119,7 @@ export default function CreateLinkModal({
           <div>
             <div className="flex items-center gap-2">
               <div className="p-2 rounded-xl bg-primary-container/10 text-primary-container">
-                <span className="material-symbols-outlined text-[20px]">add_link</span>
+                <LinkIcon size={20} />
               </div>
               <h3 className="font-semibold text-lg text-on-surface">
                 Create Short Link
@@ -125,7 +137,7 @@ export default function CreateLinkModal({
             type="button"
             className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <CloseIcon size={20} />
           </button>
         </div>
 
@@ -133,7 +145,7 @@ export default function CreateLinkModal({
         {successResult ? (
           <div className="py-6 flex flex-col items-center text-center">
             <div className="w-12 h-12 rounded-full bg-tertiary-container/15 text-tertiary-container flex items-center justify-center mb-3 ring-4 ring-tertiary-container/10">
-              <span className="material-symbols-outlined text-[26px]">check_circle</span>
+              <CheckCircleIcon size={26} />
             </div>
             <h4 className="font-semibold text-base text-on-surface">
               Link Created Successfully!
@@ -151,9 +163,7 @@ export default function CreateLinkModal({
                 type="button"
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary-container text-on-primary text-xs font-medium hover:bg-primary transition-all shrink-0 active:scale-95"
               >
-                <span className="material-symbols-outlined text-[16px]">
-                  {copied ? "check" : "content_copy"}
-                </span>
+                {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
                 <span>{copied ? "Copied" : "Copy"}</span>
               </button>
             </div>
@@ -168,7 +178,7 @@ export default function CreateLinkModal({
                   type="button"
                   className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl border border-outline-variant/50 text-xs font-medium text-on-surface hover:bg-surface-container-high transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[18px]">qr_code_2</span>
+                  <QrCodeIcon size={18} />
                   <span>View QR Code</span>
                 </button>
               )}
@@ -177,7 +187,7 @@ export default function CreateLinkModal({
                 type="button"
                 className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-primary-container text-on-primary text-xs font-medium hover:bg-primary transition-colors"
               >
-                <span className="material-symbols-outlined text-[18px]">add</span>
+                <PlusIcon size={18} />
                 <span>Create Another</span>
               </button>
             </div>
@@ -186,9 +196,7 @@ export default function CreateLinkModal({
           <form onSubmit={handleCreate} className="pt-4 flex flex-col gap-4">
             {error && (
               <div className="p-3 rounded-xl bg-error-container/40 border border-error-container text-on-error-container text-xs flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-error">
-                  error
-                </span>
+                <ErrorIcon size={18} className="text-error" />
                 <span>{error}</span>
               </div>
             )}
@@ -200,9 +208,9 @@ export default function CreateLinkModal({
                 <span className="text-[11px] text-outline font-normal">HTTP / HTTPS</span>
               </label>
               <div className="relative flex items-center">
-                <span className="material-symbols-outlined absolute left-3 text-outline text-[18px]">
-                  link
-                </span>
+                <div className="absolute left-3 pointer-events-none text-outline">
+                  <LinkIcon size={18} />
+                </div>
                 <input
                   type="url"
                   required
@@ -266,9 +274,11 @@ export default function CreateLinkModal({
                 disabled={isLoading}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-container hover:bg-primary text-on-primary text-xs font-semibold shadow-xs disabled:opacity-50 transition-all active:scale-95"
               >
-                <span className="material-symbols-outlined text-[18px]">
-                  {isLoading ? "sync" : "bolt"}
-                </span>
+                {isLoading ? (
+                  <RefreshIcon size={18} className="animate-spin" />
+                ) : (
+                  <BoltIcon size={18} />
+                )}
                 <span>{isLoading ? "Deploying..." : "Create Short Link"}</span>
               </button>
             </div>

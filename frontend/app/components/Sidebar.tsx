@@ -5,6 +5,15 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "./Logo";
 import { useAuth } from "../context/AuthContext";
+import {
+  GridIcon,
+  LinkIcon,
+  InsightsIcon,
+  PlusIcon,
+  LogOutIcon,
+  CloseIcon,
+  MenuIcon,
+} from "./Icons";
 
 interface SidebarProps {
   onOpenCreateModal?: () => void;
@@ -27,6 +36,20 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
     router.push("/login");
   };
 
+  const renderNavIcon = (iconName: string, isActive: boolean) => {
+    const className = isActive ? "text-on-primary" : "text-on-surface-variant";
+    switch (iconName) {
+      case "grid_view":
+        return <GridIcon size={20} className={className} />;
+      case "link":
+        return <LinkIcon size={20} className={className} />;
+      case "insights":
+        return <InsightsIcon size={20} className={className} />;
+      default:
+        return <LinkIcon size={20} className={className} />;
+    }
+  };
+
   const navContent = (
     <div className="flex flex-col justify-between h-full py-6 px-4">
       <div className="flex flex-col gap-6">
@@ -45,7 +68,7 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
             type="button"
             className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-primary-container text-on-primary font-medium text-sm shadow-sm hover:bg-primary transition-all active:scale-[0.98]"
           >
-            <span className="material-symbols-outlined text-[18px]">add</span>
+            <PlusIcon size={18} />
             <span>Create Short Link</span>
           </button>
         )}
@@ -65,13 +88,7 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
                     : "text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
                 }`}
               >
-                <span
-                  className={`material-symbols-outlined text-[20px] ${
-                    isActive ? "text-on-primary" : "text-on-surface-variant"
-                  }`}
-                >
-                  {item.icon}
-                </span>
+                {renderNavIcon(item.icon, isActive)}
                 <span>{item.name}</span>
               </Link>
             );
@@ -101,7 +118,7 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
             title="Log out"
             className="p-1.5 rounded-xl text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px]">logout</span>
+            <LogOutIcon size={18} />
           </button>
         </div>
       </div>
@@ -125,7 +142,7 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
               className="p-2 rounded-lg bg-primary-container text-on-primary"
               type="button"
             >
-              <span className="material-symbols-outlined text-[20px]">add</span>
+              <PlusIcon size={20} />
             </button>
           )}
           <button
@@ -134,9 +151,7 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
             type="button"
             aria-label="Toggle menu"
           >
-            <span className="material-symbols-outlined text-[22px]">
-              {mobileOpen ? "close" : "menu"}
-            </span>
+            {mobileOpen ? <CloseIcon size={22} /> : <MenuIcon size={22} />}
           </button>
         </div>
       </div>

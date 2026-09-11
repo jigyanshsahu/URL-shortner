@@ -1,13 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import { useAuth } from "../context/AuthContext";
+import { GridIcon, ArrowRightIcon, CloseIcon, MenuIcon } from "./Icons";
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const showAuth = mounted && isAuthenticated;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface/85 backdrop-blur-xl border-b border-outline-variant/30 transition-all">
@@ -35,27 +43,26 @@ export default function Navbar() {
             >
               Architecture
             </a>
-            <Link
-              href="/dashboard"
-              className="hover:text-on-surface transition-colors flex items-center gap-1"
-            >
-              <span>Console</span>
-              <span className="font-mono text-[10px] px-1 py-0.2 rounded bg-surface-container-high text-primary font-semibold">
-                Live
-              </span>
-            </Link>
+            {showAuth && (
+              <Link
+                href="/dashboard"
+                className="hover:text-on-surface transition-colors flex items-center gap-1.5 font-semibold text-primary"
+              >
+                <span>Dashboard</span>
+              </Link>
+            )}
           </nav>
         </div>
 
         {/* Right side CTAs */}
         <div className="hidden sm:flex items-center gap-3">
-          {isAuthenticated ? (
+          {showAuth ? (
             <div className="flex items-center gap-3">
               <Link
                 href="/dashboard"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-primary bg-primary-container hover:bg-primary px-4 py-2 rounded-xl shadow-xs transition-all active:scale-[0.98]"
               >
-                <span className="material-symbols-outlined text-[18px]">grid_view</span>
+                <GridIcon size={18} />
                 <span>Dashboard ({user?.name || "Jigyansh"})</span>
               </Link>
               <button
@@ -75,11 +82,11 @@ export default function Navbar() {
                 Sign In
               </Link>
               <Link
-                href="/dashboard"
+                href="/register"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-primary bg-primary-container hover:bg-primary px-4 py-2 rounded-xl shadow-xs transition-all active:scale-[0.98]"
               >
-                <span>Launch Console</span>
-                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                <span>Get Started</span>
+                <ArrowRightIcon size={16} />
               </Link>
             </div>
           )}
@@ -92,9 +99,7 @@ export default function Navbar() {
           className="sm:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high"
           aria-label="Toggle Navigation"
         >
-          <span className="material-symbols-outlined text-[24px]">
-            {mobileMenuOpen ? "close" : "menu"}
-          </span>
+          {mobileMenuOpen ? <CloseIcon size={24} /> : <MenuIcon size={24} />}
         </button>
       </div>
 
@@ -122,15 +127,17 @@ export default function Navbar() {
           >
             Architecture
           </a>
-          <Link
-            href="/dashboard"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            Dashboard Console
-          </Link>
+          {showAuth && (
+            <Link
+              href="/dashboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              Dashboard
+            </Link>
+          )}
           <div className="pt-2 border-t border-outline-variant/30 flex items-center justify-between">
-            {isAuthenticated ? (
+            {showAuth ? (
               <button
                 onClick={() => {
                   logout();
@@ -150,11 +157,11 @@ export default function Navbar() {
               </Link>
             )}
             <Link
-              href="/dashboard"
+              href={showAuth ? "/dashboard" : "/register"}
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary-container text-on-primary"
             >
-              Get Started
+              {showAuth ? "Dashboard" : "Get Started"}
             </Link>
           </div>
         </div>

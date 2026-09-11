@@ -7,7 +7,7 @@ import generateCode from "./utils/generateCode.js";
 import authenticateToken from "./middleware/auth.js";
 import authRoutes from "./routes/auth.js";
 import cleanupExpiredUrls from "./jobs/cleanupExpiredUrls.js";
-import { connectRedis } from "./redis.js";
+import { redis, connectRedis } from "./redis.js";
 import clickQueue from "./queues/clickQueue.js";
 import { rateLimit } from "./middleware/rateLimit.js";
 import QRCode from "qrcode";

@@ -1,11 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 
 export default function CTA() {
   const { isAuthenticated } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const showAuth = mounted && isAuthenticated;
 
   return (
     <section className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6">
@@ -35,12 +42,12 @@ export default function CTA() {
               Shorten a Link Free
             </a>
 
-            {!isAuthenticated ? (
+            {!showAuth ? (
               <Link
-                href="/dashboard"
+                href="/register"
                 className="w-full sm:w-auto rounded-xl border border-on-primary/30 bg-on-primary/10 px-7 py-3 text-xs font-bold text-on-primary hover:bg-on-primary/20 transition"
               >
-                Launch Live Console
+                Create Free Account
               </Link>
             ) : (
               <Link

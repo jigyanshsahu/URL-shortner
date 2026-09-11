@@ -8,14 +8,38 @@ import CreateLinkModal from "../components/CreateLinkModal";
 import AnalyticsModal from "../components/AnalyticsModal";
 import QrModal from "../components/QrModal";
 import EditUrlModal from "../components/EditUrlModal";
+import D3TimelineChart from "../components/charts/D3TimelineChart";
+import {
+  LinkIcon,
+  AdsClickIcon,
+  BoltIcon,
+  VerifiedIcon,
+  ArrowUpIcon,
+  MagicIcon,
+  RefreshIcon,
+  ErrorIcon,
+  CheckCircleIcon,
+  InsightsIcon,
+} from "../components/Icons";
 import { fetchUrls, createShortUrl, ShortenedUrl } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+
+const dashboardActivity = [
+  { date: "00:00", clicks: 18 },
+  { date: "04:00", clicks: 9 },
+  { date: "08:00", clicks: 42 },
+  { date: "12:00", clicks: 96 },
+  { date: "16:00", clicks: 124 },
+  { date: "20:00", clicks: 88 },
+  { date: "Now", clicks: 65 },
+];
 
 export default function DashboardPage() {
   const { user, token } = useAuth();
   const [links, setLinks] = useState<ShortenedUrl[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Quick Shorten in Dashboard
   const [quickUrl, setQuickUrl] = useState("");
@@ -51,6 +75,10 @@ export default function DashboardPage() {
     isOpen: false,
     item: null,
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     fetchUrls(token)
@@ -146,7 +174,7 @@ export default function DashboardPage() {
                 type="button"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-surface-container-lowest text-primary font-bold text-xs shadow-md hover:bg-surface-container-low transition-all active:scale-[0.98] self-start md:self-auto shrink-0"
               >
-                <span className="material-symbols-outlined text-[18px]">add_link</span>
+                <LinkIcon size={18} />
                 <span>+ Create Short Link</span>
               </button>
             </div>
@@ -162,16 +190,16 @@ export default function DashboardPage() {
                     Total Links
                   </span>
                   <div className="text-2xl font-extrabold text-on-surface mt-1">
-                    {stats.totalLinks.toLocaleString()}
+                    {mounted ? stats.totalLinks.toLocaleString() : "0"}
                   </div>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-primary-container/10 text-primary flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[22px]">link</span>
+                  <LinkIcon size={20} />
                 </div>
               </div>
               <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/20 text-xs">
                 <span className="inline-flex items-center gap-1 font-semibold text-tertiary-container">
-                  <span className="material-symbols-outlined text-[14px]">arrow_upward</span>
+                  <ArrowUpIcon size={14} />
                   +12.4%
                 </span>
                 <span className="text-on-surface-variant text-[11px]">vs last month</span>
@@ -186,16 +214,16 @@ export default function DashboardPage() {
                     Total Clicks
                   </span>
                   <div className="text-2xl font-extrabold text-on-surface mt-1">
-                    {stats.totalClicks.toLocaleString()}
+                    {mounted ? stats.totalClicks.toLocaleString() : "0"}
                   </div>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-primary-container/10 text-primary flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[22px]">ads_click</span>
+                  <AdsClickIcon size={20} />
                 </div>
               </div>
               <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/20 text-xs">
                 <span className="inline-flex items-center gap-1 font-semibold text-tertiary-container">
-                  <span className="material-symbols-outlined text-[14px]">arrow_upward</span>
+                  <ArrowUpIcon size={14} />
                   +28.6%
                 </span>
                 <span className="text-on-surface-variant text-[11px]">vs last month</span>
@@ -210,16 +238,16 @@ export default function DashboardPage() {
                     Clicks Today
                   </span>
                   <div className="text-2xl font-extrabold text-on-surface mt-1">
-                    {stats.clicksToday.toLocaleString()}
+                    {mounted ? stats.clicksToday.toLocaleString() : "12"}
                   </div>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-secondary-fixed text-primary flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[22px]">bolt</span>
+                  <BoltIcon size={20} />
                 </div>
               </div>
               <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/20 text-xs">
                 <span className="inline-flex items-center gap-1 font-semibold text-tertiary-container">
-                  <span className="material-symbols-outlined text-[14px]">arrow_upward</span>
+                  <ArrowUpIcon size={14} />
                   +8.1%
                 </span>
                 <span className="text-on-surface-variant text-[11px]">vs yesterday</span>
@@ -234,11 +262,11 @@ export default function DashboardPage() {
                     Active Links
                   </span>
                   <div className="text-2xl font-extrabold text-on-surface mt-1">
-                    {stats.activeLinks.toLocaleString()}
+                    {mounted ? stats.activeLinks.toLocaleString() : "0"}
                   </div>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-tertiary-container/10 text-tertiary-container flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[22px]">verified</span>
+                  <VerifiedIcon size={20} />
                 </div>
               </div>
               <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/20 text-xs font-mono">
@@ -251,13 +279,32 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* D3.js Real-time Traffic Overview */}
+          <div className="p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center">
+                  <InsightsIcon size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-on-surface">Hourly Traffic Pulse </h3>
+                  <p className="text-xs text-on-surface-variant">Real-time throughput processed across Anycast POPs.</p>
+                </div>
+              </div>
+              <span className="font-mono text-xs font-semibold px-2.5 py-1 rounded-full bg-tertiary-container/15 text-tertiary-container">
+                Sub-8ms LATENCY
+              </span>
+            </div>
+            <div className="w-full">
+              <D3TimelineChart data={dashboardActivity} height={180} />
+            </div>
+          </div>
+
           {/* Quick Shortener Bar inside Dashboard */}
           <div className="p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-[20px]">
-                  magic_button
-                </span>
+                <MagicIcon size={18} className="text-primary" />
                 <h3 className="text-sm font-bold text-on-surface">Quick URL Shortener</h3>
               </div>
               <span className="text-[11px] text-outline font-mono">
@@ -270,9 +317,9 @@ export default function DashboardPage() {
               className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
             >
               <div className="relative flex-1">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">
-                  link
-                </span>
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">
+                  <LinkIcon size={18} />
+                </div>
                 <input
                   type="url"
                   required
@@ -301,9 +348,11 @@ export default function DashboardPage() {
                 disabled={quickLoading}
                 className="h-10 px-5 rounded-xl bg-primary-container hover:bg-primary text-on-primary text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 disabled:opacity-50 shrink-0"
               >
-                <span className="material-symbols-outlined text-[16px]">
-                  {quickLoading ? "sync" : "bolt"}
-                </span>
+                {quickLoading ? (
+                  <RefreshIcon size={16} className="animate-spin" />
+                ) : (
+                  <BoltIcon size={16} />
+                )}
                 <span>{quickLoading ? "Shortening..." : "Shorten"}</span>
               </button>
             </form>
@@ -316,9 +365,11 @@ export default function DashboardPage() {
                     : "bg-tertiary-container/15 text-tertiary-container border border-tertiary-container/20 font-mono"
                 }`}
               >
-                <span className="material-symbols-outlined text-[16px]">
-                  {quickMsg.isError ? "error" : "check_circle"}
-                </span>
+                {quickMsg.isError ? (
+                  <ErrorIcon size={16} className="text-error" />
+                ) : (
+                  <CheckCircleIcon size={16} />
+                )}
                 <span>{quickMsg.text}</span>
               </div>
             )}

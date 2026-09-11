@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 export interface User {
   id: number | string;
@@ -24,26 +24,26 @@ const TOKEN_KEY = "linkly_auth_token";
 const USER_KEY = "linkly_auth_user";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      return localStorage.getItem(TOKEN_KEY);
-    } catch {
-      return null;
-    }
-  });
+  // Start with null for both server and initial client render to avoid SSR hydration mismatch
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [user, setUser] = useState<User | null>(() => {
-    if (typeof window === "undefined") return null;
+  // Sync from localStorage after mounting in browser
+  useEffect(() => {
     try {
-      const stored = localStorage.getItem(USER_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
+      const storedToken = localStorage.getItem(TOKEN_KEY);
+      const storedUser = localStorage.getItem(USER_KEY);
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (e) {
+      console.warn("Failed to load auth state:", e);
+    } finally {
+      setIsLoading(false);
     }
-  });
-
-  const [isLoading] = useState(false);
+  }, []);
 
   const login = (newToken: string, newUser: User) => {
     setToken(newToken);

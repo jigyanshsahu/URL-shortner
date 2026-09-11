@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import Logo from "./Logo";
 
 export default function Footer() {
@@ -42,9 +43,9 @@ export default function Footer() {
             <a href="#architecture" className="hover:text-on-surface transition-colors">
               Architecture
             </a>
-            <a href="/dashboard" className="text-primary hover:underline transition-colors">
-              Console
-            </a>
+            <Link href="/login" className="hover:text-on-surface transition-colors">
+              Sign In
+            </Link>
           </div>
         </div>
       </div>

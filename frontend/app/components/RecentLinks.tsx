@@ -3,6 +3,18 @@
 import { useEffect, useState, useMemo } from "react";
 import { fetchUrls, deleteUrl, ShortenedUrl } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import {
+  SearchIcon,
+  CopyIcon,
+  CheckIcon,
+  AdsClickIcon,
+  QrCodeIcon,
+  InsightsIcon,
+  EditIcon,
+  TrashIcon,
+  RefreshIcon,
+  LinkIcon,
+} from "./Icons";
 
 interface RecentLinksProps {
   refreshTrigger?: number;
@@ -100,21 +112,21 @@ export default function RecentLinks({
   }, [links, statusFilter, searchQuery, sortBy]);
 
   return (
-    <div className="w-full">
-      {/* Search and Filters Header */}
+    <div className="flex flex-col gap-4">
+      {/* Control bar: Search, filter & sort */}
       {showAllControls && (
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-surface-container-lowest p-3.5 rounded-2xl border border-outline-variant/40 shadow-xs">
           {/* Search Input */}
-          <div className="relative flex-1 min-w-[200px]">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-outline pointer-events-none">
-              search
-            </span>
+          <div className="relative flex-1">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">
+              <SearchIcon size={18} />
+            </div>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by alias or target URL..."
-              className="w-full h-9 pl-9 pr-8 rounded-xl bg-surface-container-low border border-outline-variant/30 text-xs text-on-surface placeholder:text-outline focus:border-primary-container focus:bg-surface-container-lowest focus:outline-none transition-all"
+              placeholder="Search by short code or destination URL..."
+              className="w-full h-9 pl-9 pr-8 rounded-xl bg-surface-container-low text-xs text-on-surface placeholder:text-outline border border-outline-variant/30 focus:border-primary-container focus:bg-surface-container-lowest focus:outline-none transition-all"
             />
             {searchQuery && (
               <button
@@ -177,15 +189,13 @@ export default function RecentLinks({
       <div className="w-full bg-surface-container-lowest rounded-2xl border border-outline-variant/40 shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-12 flex flex-col items-center justify-center text-on-surface-variant gap-3">
-            <span className="material-symbols-outlined text-[32px] text-primary animate-spin">
-              sync
-            </span>
+            <RefreshIcon size={32} className="text-primary animate-spin" />
             <span className="text-xs font-medium">Loading link telemetry...</span>
           </div>
         ) : filteredLinks.length === 0 ? (
           <div className="p-12 flex flex-col items-center justify-center text-center">
             <div className="w-12 h-12 rounded-2xl bg-surface-container-high flex items-center justify-center text-outline mb-3">
-              <span className="material-symbols-outlined text-[24px]">link_off</span>
+              <LinkIcon size={24} />
             </div>
             <p className="text-sm font-semibold text-on-surface">No links found</p>
             <p className="text-xs text-on-surface-variant mt-1 max-w-sm">
@@ -231,8 +241,8 @@ export default function RecentLinks({
                             className="font-mono text-xs font-bold text-primary hover:underline flex items-center gap-1 group"
                           >
                             <span>linkly.app/{item.short_code}</span>
-                            <span className="material-symbols-outlined text-[14px] text-outline group-hover:text-primary">
-                              {isCopied ? "check" : "content_copy"}
+                            <span className="text-outline group-hover:text-primary">
+                              {isCopied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
                             </span>
                           </button>
                         </div>
@@ -251,9 +261,7 @@ export default function RecentLinks({
                       {/* Clicks */}
                       <td className="py-3.5 px-4 text-center">
                         <span className="inline-flex items-center gap-1 font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-surface-container-high text-on-surface">
-                          <span className="material-symbols-outlined text-[14px] text-primary">
-                            ads_click
-                          </span>
+                          <AdsClickIcon size={14} className="text-primary" />
                           {item.click_count || 0}
                         </span>
                       </td>
@@ -282,9 +290,7 @@ export default function RecentLinks({
                             title="QR Code"
                             className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
                           >
-                            <span className="material-symbols-outlined text-[18px]">
-                              qr_code_2
-                            </span>
+                            <QrCodeIcon size={18} />
                           </button>
 
                           <button
@@ -293,9 +299,7 @@ export default function RecentLinks({
                             title="Analytics"
                             className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors"
                           >
-                            <span className="material-symbols-outlined text-[18px]">
-                              insights
-                            </span>
+                            <InsightsIcon size={18} />
                           </button>
 
                           <button
@@ -304,9 +308,7 @@ export default function RecentLinks({
                             title="Edit URL"
                             className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
                           >
-                            <span className="material-symbols-outlined text-[18px]">
-                              edit
-                            </span>
+                            <EditIcon size={18} />
                           </button>
 
                           <button
@@ -315,9 +317,7 @@ export default function RecentLinks({
                             title="Delete"
                             className="p-1.5 rounded-lg text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors"
                           >
-                            <span className="material-symbols-outlined text-[18px]">
-                              delete
-                            </span>
+                            <TrashIcon size={18} />
                           </button>
                         </div>
                       </td>

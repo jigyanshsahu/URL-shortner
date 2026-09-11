@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ArchitectureFlow from "./components/ArchitectureFlow";
@@ -12,9 +12,18 @@ import AnalyticsModal from "./components/AnalyticsModal";
 import QrModal from "./components/QrModal";
 import EditUrlModal from "./components/EditUrlModal";
 import { ShortenedUrl } from "./lib/api";
+import { useAuth } from "./context/AuthContext";
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const showAuth = mounted && isAuthenticated;
 
   // Modals state
   const [analyticsState, setAnalyticsState] = useState<{
@@ -88,28 +97,31 @@ export default function Home() {
 
       <ArchitectureFlow />
 
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
-          <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold px-3 py-1 rounded-full bg-surface-container-high">
-              LIVE DIRECTORY
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight mt-2">
-              Recently Created Short Links
-            </h2>
-            <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
-              Active routes being serviced by our Redis in-memory cache layer.
-            </p>
+      {/* Show Recent Links Directory ONLY after user is logged in & mounted */}
+      {showAuth && (
+        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto animate-in fade-in duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+            <div>
+              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold px-3 py-1 rounded-full bg-surface-container-high">
+                YOUR ACTIVE LINKS
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight mt-2">
+                Your Link Directory
+              </h2>
+              <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
+                Active routes being serviced by our Redis in-memory cache layer.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <RecentLinks
-          refreshTrigger={refreshTrigger}
-          onOpenAnalytics={handleOpenAnalytics}
-          onOpenQr={handleOpenQr}
-          onOpenEdit={handleOpenEdit}
-        />
-      </section>
+          <RecentLinks
+            refreshTrigger={refreshTrigger}
+            onOpenAnalytics={handleOpenAnalytics}
+            onOpenQr={handleOpenQr}
+            onOpenEdit={handleOpenEdit}
+          />
+        </section>
+      )}
 
       <Features />
 
@@ -117,29 +129,33 @@ export default function Home() {
 
       <Footer />
 
-      {/* Interactive Modals */}
-      <AnalyticsModal
-        isOpen={analyticsState.isOpen}
-        onClose={() =>
-          setAnalyticsState((prev) => ({ ...prev, isOpen: false }))
-        }
-        shortCode={analyticsState.shortCode}
-        urlId={analyticsState.urlId}
-      />
+      {/* Interactive Modals for authenticated actions */}
+      {showAuth && (
+        <>
+          <AnalyticsModal
+            isOpen={analyticsState.isOpen}
+            onClose={() =>
+              setAnalyticsState((prev) => ({ ...prev, isOpen: false }))
+            }
+            shortCode={analyticsState.shortCode}
+            urlId={analyticsState.urlId}
+          />
 
-      <QrModal
-        isOpen={qrState.isOpen}
-        onClose={() => setQrState((prev) => ({ ...prev, isOpen: false }))}
-        shortCode={qrState.shortCode}
-        urlId={qrState.urlId}
-      />
+          <QrModal
+            isOpen={qrState.isOpen}
+            onClose={() => setQrState((prev) => ({ ...prev, isOpen: false }))}
+            shortCode={qrState.shortCode}
+            urlId={qrState.urlId}
+          />
 
-      <EditUrlModal
-        isOpen={editState.isOpen}
-        onClose={() => setEditState({ isOpen: false, item: null })}
-        item={editState.item}
-        onUpdated={handleUrlUpdated}
-      />
+          <EditUrlModal
+            isOpen={editState.isOpen}
+            onClose={() => setEditState({ isOpen: false, item: null })}
+            item={editState.item}
+            onUpdated={handleUrlUpdated}
+          />
+        </>
+      )}
     </main>
   );
 }

@@ -1,8 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createShortUrl, isValidUrl, ShortenedUrl } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import {
+  LinkIcon,
+  BoltIcon,
+  TimerIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+  CheckIcon,
+  CopyIcon,
+  ExternalLinkIcon,
+  QrCodeIcon,
+  InsightsIcon,
+  RefreshIcon,
+  ErrorIcon,
+} from "./Icons";
 
 interface HeroProps {
   onUrlCreated?: (newUrl?: ShortenedUrl) => void;
@@ -15,13 +29,20 @@ export default function Hero({
   onOpenQr,
   onOpenAnalytics,
 }: HeroProps) {
-  const { token } = useAuth();
+  const { token, isAuthenticated } = useAuth();
   const [url, setUrl] = useState("");
   const [alias, setAlias] = useState("");
   const [expiryDays, setExpiryDays] = useState("0");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const showAuth = mounted && isAuthenticated;
 
   // Result card state
   const [latestShort, setLatestShort] = useState<{
@@ -99,7 +120,7 @@ export default function Hero({
   return (
     <section
       id="shortener"
-      className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col items-center text-center overflow-hidden"
+      className="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col items-center text-center overflow-hidden"
     >
       {/* Radial atmospheric glows */}
       <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[680px] h-[340px] bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10" />
@@ -114,9 +135,7 @@ export default function Hero({
         <span className="text-xs font-semibold text-on-surface-variant">
           v2.4 Released: Redis-backed sub-10ms global redirects
         </span>
-        <span className="material-symbols-outlined text-primary-container text-[16px] group-hover:translate-x-0.5 transition-transform">
-          arrow_forward
-        </span>
+        <ArrowRightIcon size={16} className="text-primary-container group-hover:translate-x-0.5 transition-transform" />
       </a>
 
       {/* Main Headline */}
@@ -139,9 +158,9 @@ export default function Hero({
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           {/* Long URL Input */}
           <div className="relative flex items-center">
-            <span className="material-symbols-outlined text-outline absolute left-3.5 pointer-events-none text-[20px]">
-              link
-            </span>
+            <div className="absolute left-3.5 pointer-events-none text-outline">
+              <LinkIcon size={20} />
+            </div>
             <input
               type="url"
               required
@@ -170,9 +189,7 @@ export default function Hero({
 
             {/* Expiration Dropdown */}
             <div className="flex items-center h-11 px-3 bg-surface rounded-xl text-on-surface-variant border border-transparent hover:bg-surface-container-high transition-colors">
-              <span className="material-symbols-outlined text-[18px] mr-1 text-outline">
-                timer
-              </span>
+              <TimerIcon size={18} className="mr-1.5 text-outline" />
               <select
                 value={expiryDays}
                 onChange={(e) => setExpiryDays(e.target.value)}
@@ -191,9 +208,11 @@ export default function Hero({
               disabled={isLoading}
               className="h-11 px-6 rounded-xl bg-primary-container hover:bg-primary active:scale-[0.98] text-on-primary text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-all shrink-0 disabled:opacity-50"
             >
-              <span className="material-symbols-outlined text-[18px]">
-                {isLoading ? "sync" : "bolt"}
-              </span>
+              {isLoading ? (
+                <RefreshIcon size={18} className="animate-spin" />
+              ) : (
+                <BoltIcon size={18} />
+              )}
               <span>{isLoading ? "Shortening..." : "Shorten URL"}</span>
             </button>
           </div>
@@ -201,9 +220,7 @@ export default function Hero({
 
         {error && (
           <div className="mt-3 p-2.5 rounded-lg bg-error-container/40 border border-error-container text-on-error-container text-xs flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px] text-error">
-              error
-            </span>
+            <ErrorIcon size={16} className="text-error" />
             <span>{error}</span>
           </div>
         )}
@@ -211,20 +228,12 @@ export default function Hero({
         {/* Footnote under input */}
         <div className="mt-3 pt-3 border-t border-outline-variant/30 flex flex-wrap items-center justify-between text-xs text-on-surface-variant gap-2">
           <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-tertiary-container text-[16px]">
-              check_circle
-            </span>
+            <CheckCircleIcon size={16} className="text-tertiary-container" />
             <span>Global Edge Anycast DNS enabled</span>
           </div>
-          <a
-            href="/dashboard"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
-          >
-            <span>Open Interactive Console</span>
-            <span className="material-symbols-outlined text-[14px]">
-              arrow_outward
-            </span>
-          </a>
+          <div className="flex items-center gap-1.5 font-mono text-[11px] text-outline">
+            <span>Redis In-Memory • BullMQ Telemetry</span>
+          </div>
         </div>
       </div>
 
@@ -253,9 +262,7 @@ export default function Hero({
                   className="p-1 rounded text-outline hover:text-on-surface transition-colors"
                   title="Test link destination"
                 >
-                  <span className="material-symbols-outlined text-[18px]">
-                    open_in_new
-                  </span>
+                  <ExternalLinkIcon size={18} />
                 </a>
               </div>
               <p className="text-xs text-on-surface-variant truncate mt-1 max-w-lg">
@@ -270,13 +277,12 @@ export default function Hero({
                 type="button"
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary-container text-on-primary text-xs font-semibold hover:bg-primary transition-all active:scale-95 shadow-xs"
               >
-                <span className="material-symbols-outlined text-[16px]">
-                  {copied ? "check" : "content_copy"}
-                </span>
+                {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
                 <span>{copied ? "Copied!" : "Copy"}</span>
               </button>
 
-              {onOpenQr && latestShort.id && (
+              {/* Show QR and Analytics action triggers only if authenticated */}
+              {showAuth && onOpenQr && latestShort.id && (
                 <button
                   onClick={() =>
                     onOpenQr(latestShort.shortCode, latestShort.id!)
@@ -285,13 +291,11 @@ export default function Hero({
                   title="Generate QR Code"
                   className="p-2 rounded-xl bg-surface-container border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[18px]">
-                    qr_code_2
-                  </span>
+                  <QrCodeIcon size={18} />
                 </button>
               )}
 
-              {onOpenAnalytics && latestShort.id && (
+              {showAuth && onOpenAnalytics && latestShort.id && (
                 <button
                   onClick={() =>
                     onOpenAnalytics(latestShort.shortCode, latestShort.id!)
@@ -300,13 +304,20 @@ export default function Hero({
                   title="View Analytics"
                   className="p-2 rounded-xl bg-surface-container border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[18px]">
-                    insights
-                  </span>
+                  <InsightsIcon size={18} />
                 </button>
               )}
             </div>
           </div>
+
+          {!showAuth && (
+            <div className="mt-3 pt-2.5 border-t border-outline-variant/20 flex items-center justify-between text-[11px] text-outline">
+              <span>Looking for analytics & dynamic QR codes?</span>
+              <a href="/login" className="font-semibold text-primary hover:underline">
+                Sign in to view telemetry →
+              </a>
+            </div>
+          )}
         </div>
       )}
     </section>

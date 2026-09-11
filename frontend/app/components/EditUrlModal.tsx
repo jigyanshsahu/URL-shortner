@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { updateUrl, ShortenedUrl, isValidUrl } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import { EditIcon, CloseIcon, ErrorIcon, RefreshIcon, CheckIcon } from "./Icons";
 
 interface EditUrlModalProps {
   item?: ShortenedUrl | null;
@@ -68,9 +69,7 @@ function EditUrlForm({
     <form onSubmit={handleSave} className="py-4 flex flex-col gap-4">
       {error && (
         <div className="p-3 rounded-xl bg-error-container/40 border border-error-container text-on-error-container text-xs flex items-center gap-2">
-          <span className="material-symbols-outlined text-[16px] text-error">
-            error
-          </span>
+          <ErrorIcon size={16} className="text-error" />
           <span>{error}</span>
         </div>
       )}
@@ -136,9 +135,7 @@ function EditUrlForm({
           disabled={loading}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary-container hover:bg-primary text-on-primary text-xs font-bold shadow-xs transition active:scale-95 disabled:opacity-50"
         >
-          <span className="material-symbols-outlined text-[16px]">
-            {loading ? "sync" : "save"}
-          </span>
+          {loading ? <RefreshIcon size={16} className="animate-spin" /> : <CheckIcon size={16} />}
           <span>{loading ? "Saving Changes..." : "Save Link"}</span>
         </button>
       </div>
@@ -166,16 +163,16 @@ export default function EditUrlModal({
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-outline-variant/30">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-[20px]">
-              edit
-            </span>
+            <div className="w-7 h-7 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center">
+              <EditIcon size={18} />
+            </div>
             <h3 className="font-bold text-base text-on-surface">Edit Link Settings</h3>
           </div>
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <CloseIcon size={18} />
           </button>
         </div>
 

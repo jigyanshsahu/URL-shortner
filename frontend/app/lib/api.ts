@@ -56,6 +56,7 @@ export interface QrCodeResponse {
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const REDIRECT_BASE_URL = process.env.NEXT_PUBLIC_REDIRECT_URL || API_BASE_URL;
 
 // Storage key for mock links when running in demo/offline mode
 const MOCK_STORAGE_KEY = "shortly_mock_urls";
@@ -198,10 +199,9 @@ export async function createShortUrl(
       }
 
       const shortCode = data.url?.short_code || options.alias;
-      const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
 
       return {
-        shortUrl: `${origin}/${shortCode}`,
+        shortUrl: `${REDIRECT_BASE_URL}/${shortCode}`,
         originalUrl: data.url?.original_url || normalized,
         shortCode,
         id: data.url?.id,
@@ -217,7 +217,6 @@ export async function createShortUrl(
 
   // Offline / Demo fallback
   const mockCode = options?.alias?.trim() || Math.random().toString(36).substring(2, 8);
-  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
   const newMockUrl: ShortenedUrl = {
     id: `mock-${Date.now()}`,
     short_code: mockCode,
@@ -231,7 +230,7 @@ export async function createShortUrl(
   const existing = stored.find((u) => u.original_url === normalized);
   if (existing) {
     return {
-      shortUrl: `${origin}/${existing.short_code}`,
+      shortUrl: `${REDIRECT_BASE_URL}/${existing.short_code}`,
       originalUrl: existing.original_url,
       shortCode: existing.short_code,
       id: existing.id,
@@ -243,7 +242,7 @@ export async function createShortUrl(
   saveMockUrls([newMockUrl, ...stored]);
 
   return {
-    shortUrl: `${origin}/${mockCode}`,
+    shortUrl: `${REDIRECT_BASE_URL}/${mockCode}`,
     originalUrl: normalized,
     shortCode: mockCode,
     id: newMockUrl.id,
@@ -464,9 +463,8 @@ export async function fetchUrlQrCode(
     }
   }
 
-  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
   const code = shortCode || "demo";
-  const fullUrl = `${origin}/${code}`;
+  const fullUrl = `${REDIRECT_BASE_URL}/${code}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(
     fullUrl
   )}`;

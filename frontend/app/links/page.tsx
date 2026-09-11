@@ -8,6 +8,7 @@ import CreateLinkModal from "../components/CreateLinkModal";
 import AnalyticsModal from "../components/AnalyticsModal";
 import QrModal from "../components/QrModal";
 import EditUrlModal from "../components/EditUrlModal";
+import { LinkIcon, AdsClickIcon, VerifiedIcon, TimerIcon, PlusIcon } from "../components/Icons";
 import { fetchUrls, ShortenedUrl } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -107,7 +108,7 @@ export default function LinksPage() {
                 </span>
               </div>
               <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary">
-                <span className="material-symbols-outlined text-[20px]">link</span>
+                <LinkIcon size={20} />
               </div>
             </div>
 
@@ -124,7 +125,7 @@ export default function LinksPage() {
                 </span>
               </div>
               <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary">
-                <span className="material-symbols-outlined text-[20px]">ads_click</span>
+                <AdsClickIcon size={20} />
               </div>
             </div>
 
@@ -141,7 +142,7 @@ export default function LinksPage() {
                 </span>
               </div>
               <div className="w-10 h-10 rounded-xl bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
-                <span className="material-symbols-outlined text-[20px]">verified</span>
+                <VerifiedIcon size={20} />
               </div>
             </div>
 
@@ -158,7 +159,7 @@ export default function LinksPage() {
                 </span>
               </div>
               <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-outline">
-                <span className="material-symbols-outlined text-[20px]">timer</span>
+                <TimerIcon size={20} />
               </div>
             </div>
           </div>
@@ -178,7 +179,7 @@ export default function LinksPage() {
                 type="button"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary-container hover:bg-primary text-on-primary text-xs font-bold shadow-xs transition-all active:scale-95 self-start sm:self-auto"
               >
-                <span className="material-symbols-outlined text-[16px]">add</span>
+                <PlusIcon size={16} />
                 <span>New Short Link</span>
               </button>
             </div>

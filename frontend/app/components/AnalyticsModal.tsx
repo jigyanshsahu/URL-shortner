@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchUrlAnalytics, UrlAnalytics } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import D3TimelineChart from "./charts/D3TimelineChart";
+import { InsightsIcon, CloseIcon, RefreshIcon } from "./Icons";
 
 interface AnalyticsModalProps {
   urlId: string | number | null;
@@ -55,9 +57,9 @@ export default function AnalyticsModal({
         <div className="flex items-start justify-between pb-4 border-b border-outline-variant/30">
           <div>
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary text-[20px]">
-                insights
-              </span>
+              <div className="w-7 h-7 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center">
+                <InsightsIcon size={18} />
+              </div>
               <h3 className="font-bold text-base text-on-surface">
                 Link Telemetry Drilldown
               </h3>
@@ -70,15 +72,13 @@ export default function AnalyticsModal({
             onClick={onClose}
             className="p-1.5 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <CloseIcon size={18} />
           </button>
         </div>
 
         {loading ? (
           <div className="py-16 flex flex-col items-center justify-center gap-3 text-on-surface-variant">
-            <span className="material-symbols-outlined text-[32px] text-primary animate-spin">
-              sync
-            </span>
+            <RefreshIcon size={28} className="text-primary animate-spin" />
             <span className="text-xs font-mono">Fetching edge telemetry logs...</span>
           </div>
         ) : (
@@ -112,26 +112,21 @@ export default function AnalyticsModal({
               </div>
             </div>
 
-            {/* Click Distribution Chart */}
+            {/* Click Velocity Chart (D3.js) */}
             <div className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30">
-              <span className="text-xs font-bold text-on-surface">Click Velocity (Last 7 Days)</span>
-              <div className="flex items-end justify-between gap-2 h-36 pt-6 pb-2 px-1 border-b border-outline-variant/30">
-                {(data?.clicksByDay || []).map((day, idx) => {
-                  const max = Math.max(...(data?.clicksByDay || []).map((d) => d.clicks), 1);
-                  const pct = Math.max(15, Math.round((day.clicks / max) * 100));
-                  return (
-                    <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-                      <span className="text-[10px] font-mono text-outline">{day.clicks}</span>
-                      <div
-                        style={{ height: `${pct}%` }}
-                        className="w-full max-w-[32px] bg-primary-container rounded-t-md"
-                      />
-                      <span className="text-[10px] font-mono text-on-surface-variant font-medium">
-                        {day.date}
-                      </span>
-                    </div>
-                  );
-                })}
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-on-surface">Click Velocity (D3.js Timeline)</span>
+                <span className="font-mono text-[10px] text-primary font-semibold px-2 py-0.5 rounded bg-surface-container-high">
+                  LAST 7 DAYS
+                </span>
+              </div>
+              <div className="w-full">
+                <D3TimelineChart
+                  data={data?.clicksByDay && data.clicksByDay.length > 0 ? data.clicksByDay : []}
+                  height={150}
+                  barColor="#4F46E5"
+                  highlightColor="#6366F1"
+                />
               </div>
             </div>
 
