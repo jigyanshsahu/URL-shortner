@@ -1,0 +1,22 @@
+{
+  "name": "@jigyanshsahu/url-shortener-cli",
+  "version": "1.0.0",
+  "description": "Fast URL shortener CLI",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "urlshortener": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "boxen": "^7.1.1",
+    "chalk": "^5.3.0",
+    "dotenv": "^16.4.5",
+    "figlet": "^1.8.0",
+    "inquirer": "^9.3.7",
+    "ora": "^8.1.0",
+    "pg": "^8.13.1"
+  }
+}
