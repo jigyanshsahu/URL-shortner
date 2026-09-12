@@ -18,7 +18,7 @@ function displayBanner() {
             })
         )
     );
-    console.log(chalk.gray("  ⚡ Direct Database URL Shortener CLI\n"));
+    console.log(chalk.gray("  ⚡ URL Shortener CLI\n"));
 }
 
 function generateCode(length = 6) {
