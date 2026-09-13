@@ -19,6 +19,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 dotenv.config();
 const app = express();
+const getBaseUrl = () => (process.env.BASE_URL || "http://localhost:5000").replace(/\/+$/, "");
 app.use(cors());
 app.use(express.json());
 
@@ -497,7 +498,7 @@ app.get(
             const url = result.rows[0];
 
             const shortUrl =
-                `${process.env.BASE_URL}/${url.short_code}`;
+                `${getBaseUrl()}/${url.short_code}`;
 
             // Generate QR as a PNG data URL
             const qrCode = await QRCode.toDataURL(shortUrl, {
@@ -537,7 +538,7 @@ app.post(
             );
 
             res.status(201).json({
-                shortUrl: `${process.env.BASE_URL}/${result.rows[0].short_code}`,
+                shortUrl: `${getBaseUrl()}/${result.rows[0].short_code}`,
                 originalUrl: result.rows[0].original_url,
                 shortCode: result.rows[0].short_code
             });

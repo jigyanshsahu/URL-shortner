@@ -5,7 +5,8 @@ import ora from "ora";
 import inquirer from "inquirer";
 import figlet from "figlet";
 import boxen from "boxen";
-const API_URL = process.env.URL_SHORTENER_API_URL || "https://url-shortner-z8dx.onrender.com/";
+const rawApiUrl = process.env.URL_SHORTENER_API_URL || "https://url-shortner-z8dx.onrender.com";
+const API_URL = rawApiUrl.trim().replace(/\/+$/, "");
 
 
 function displayBanner() {
