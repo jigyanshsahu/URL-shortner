@@ -11,6 +11,7 @@ import { redis, connectRedis } from "./redis.js";
 import clickQueue from "./queues/clickQueue.js";
 import { rateLimit } from "./middleware/rateLimit.js";
 import QRCode from "qrcode";
+import "./worker.js";
 dotenv.config();
 const app = express();
 app.use(cors());
@@ -660,7 +661,7 @@ async function startServer() {
 
         console.log("Redis connected");
 
-        app.listen(PORT, () => {
+        app.listen(PORT, "0.0.0.0", () => {
             console.log(`Server running on port ${PORT}`);
         });
     } catch (error) {

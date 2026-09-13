@@ -46,4 +46,8 @@ worker.on("failed", (job, error) => {
     );
 });
 
+worker.on("error", (error) => {
+    console.error("Click worker error:", error.message);
+});
+
 console.log("Click worker started");
