@@ -12,6 +12,11 @@ import clickQueue from "./queues/clickQueue.js";
 import { rateLimit } from "./middleware/rateLimit.js";
 import QRCode from "qrcode";
 import "./worker.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 dotenv.config();
 const app = express();
 app.use(cors());
