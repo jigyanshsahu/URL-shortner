@@ -116,11 +116,8 @@ export default function QrModal({
 
           <div className="mt-4">
             <span className="font-mono text-xs font-bold text-primary">
-              linkly.app/{shortCode}
+              /{shortCode}
             </span>
-            <p className="text-[11px] text-on-surface-variant mt-0.5">
-              Scans automatically route through edge telemetry
-            </p>
           </div>
         </div>
 

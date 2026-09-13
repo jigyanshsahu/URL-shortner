@@ -155,7 +155,7 @@ export default function AnalyticsPage() {
                 <option value="all">All Links (Aggregated)</option>
                 {links.map((l) => (
                   <option key={l.id} value={String(l.id)}>
-                    linkly.app/{l.short_code} ({l.click_count || 0} clicks)
+                    /{l.short_code} ({l.click_count || 0} clicks)
                   </option>
                 ))}
               </select>

@@ -61,11 +61,11 @@ export default function AnalyticsModal({
                 <InsightsIcon size={18} />
               </div>
               <h3 className="font-bold text-base text-on-surface">
-                Link Telemetry Drilldown
+                Link Analytics
               </h3>
             </div>
             <p className="font-mono text-xs font-semibold text-primary mt-1">
-              linkly.app/{shortCode}
+              /{shortCode}
             </p>
           </div>
           <button

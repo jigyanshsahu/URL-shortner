@@ -63,7 +63,7 @@ export default function Navbar() {
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-primary bg-primary-container hover:bg-primary px-4 py-2 rounded-xl shadow-xs transition-all active:scale-[0.98]"
               >
                 <GridIcon size={18} />
-                <span>Dashboard ({user?.name || "Jigyansh"})</span>
+                <span>{user?.name || "Dashboard"}</span>
               </Link>
               <button
                 onClick={logout}

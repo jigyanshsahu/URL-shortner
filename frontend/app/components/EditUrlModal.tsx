@@ -94,16 +94,13 @@ function EditUrlForm({
         <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider font-mono">
           Custom Alias Slug
         </label>
-        <div className="flex items-center h-10 px-3 rounded-xl bg-surface-container-low border border-outline-variant/30">
-          <span className="font-mono text-xs text-on-surface-variant select-none">
-            linkly.app/
-          </span>
+        <div className="flex items-center h-10 px-3 rounded-xl bg-surface-container-low border border-outline-variant/30 focus-within:border-primary-container transition-all">
           <input
             type="text"
             value={alias}
             onChange={(e) => setAlias(e.target.value)}
-            placeholder="vanity-slug"
-            className="w-full bg-transparent font-mono text-xs font-bold text-primary focus:outline-none ml-1"
+            placeholder="custom-slug"
+            className="w-full bg-transparent text-xs text-on-surface placeholder:text-outline focus:outline-none"
           />
         </div>
       </div>

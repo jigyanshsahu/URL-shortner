@@ -228,16 +228,13 @@ export default function CreateLinkModal({
                 <span>Custom Alias (Optional)</span>
                 <span className="text-[11px] text-outline font-normal">Leave blank for random</span>
               </label>
-              <div className="flex items-center h-10 rounded-xl bg-surface-container-low border border-outline-variant/30 px-3 gap-1">
-                <span className="font-mono text-xs text-on-surface-variant select-none">
-                  linkly.app/
-                </span>
+              <div className="flex items-center h-10 rounded-xl bg-surface-container-low border border-outline-variant/30 px-3 focus-within:border-primary-container transition-all">
                 <input
                   type="text"
                   value={alias}
                   onChange={(e) => setAlias(e.target.value)}
-                  placeholder="my-campaign"
-                  className="w-full bg-transparent font-mono text-xs font-semibold text-primary focus:outline-none"
+                  placeholder="Custom slug (optional, e.g. campaign)"
+                  className="w-full bg-transparent text-xs text-on-surface placeholder:text-outline focus:outline-none"
                 />
               </div>
             </div>

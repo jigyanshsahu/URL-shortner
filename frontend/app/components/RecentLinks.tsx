@@ -240,7 +240,7 @@ export default function RecentLinks({
                             title="Copy short link"
                             className="font-mono text-xs font-bold text-primary hover:underline flex items-center gap-1 group"
                           >
-                            <span>linkly.app/{item.short_code}</span>
+                            <span>/{item.short_code}</span>
                             <span className="text-outline group-hover:text-primary">
                               {isCopied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
                             </span>

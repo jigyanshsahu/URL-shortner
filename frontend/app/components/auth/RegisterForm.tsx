@@ -80,29 +80,29 @@ export default function RegisterForm() {
   return (
     <div className="w-full max-w-md px-4">
       {/* Header */}
-      <div className="mb-4 text-center flex flex-col items-center">
-        <Logo size="md" showBadge badgeText="v2.4-edge" href="/" />
+      <div className="mb-6 text-center flex flex-col items-center">
+        <Logo size="md" href="/" />
 
-        <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-on-surface">
-          Create Linkly Account
+        <h1 className="mt-4 text-2xl font-bold tracking-tight text-on-surface">
+          Create an account
         </h1>
 
         <p className="mt-1 text-xs text-on-surface-variant max-w-xs">
-          Deploy lightning-fast URL redirects and track click telemetry instantly.
+          Start shortening links and tracking analytics in seconds.
         </p>
       </div>
 
       {/* Form Card */}
-      <div className="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest p-5 sm:p-6 shadow-xl">
+      <div className="rounded-2xl border border-outline-variant/50 bg-surface-container-lowest p-6 shadow-md">
         {authStatus && (
-          <div className="mb-3.5 rounded-xl bg-primary-container/10 border border-primary-container/20 p-2.5 text-center text-xs font-semibold text-primary flex items-center justify-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+          <div className="mb-4 rounded-xl bg-primary-container/10 border border-primary-container/20 p-2.5 text-center text-xs font-semibold text-primary flex items-center justify-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             <span>{authStatus}</span>
           </div>
         )}
 
         {error && (
-          <div className="mb-3.5 rounded-xl border border-error-container bg-error-container/30 p-2.5 text-center text-xs font-semibold text-on-error-container flex items-center justify-center gap-2">
+          <div className="mb-4 rounded-xl border border-error-container bg-error-container/30 p-2.5 text-center text-xs font-semibold text-on-error-container flex items-center justify-center gap-2">
             <ErrorIcon size={16} className="text-error" />
             <span>{error}</span>
           </div>
@@ -114,7 +114,7 @@ export default function RegisterForm() {
             e.stopPropagation();
             form.handleSubmit();
           }}
-          className="space-y-3"
+          className="space-y-3.5"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <form.Field name="name">
@@ -124,7 +124,7 @@ export default function RegisterForm() {
                   name="name"
                   label="Full Name"
                   type="text"
-                  placeholder="Alex Developer"
+                  placeholder="Your Name"
                 />
               )}
             </form.Field>
@@ -134,9 +134,9 @@ export default function RegisterForm() {
                 <AuthInput
                   field={field}
                   name="email"
-                  label="Work Email"
+                  label="Email"
                   type="email"
-                  placeholder="dev@company.com"
+                  placeholder="name@example.com"
                 />
               )}
             </form.Field>
@@ -171,34 +171,18 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-1 flex items-center justify-center gap-2 rounded-xl bg-primary-container hover:bg-primary py-2.5 text-xs font-bold text-on-primary shadow-xs transition active:scale-95 disabled:opacity-50"
+            className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-primary-container hover:bg-primary py-2.5 text-xs font-bold text-on-primary shadow-xs transition active:scale-[0.98] disabled:opacity-50"
           >
             {loading ? (
               <RefreshIcon size={18} className="animate-spin" />
             ) : (
               <PlusIcon size={18} />
             )}
-            <span>{loading ? "Registering..." : "Create Developer Account"}</span>
+            <span>{loading ? "Creating account..." : "Create Account"}</span>
           </button>
         </form>
 
-        <div className="relative my-3.5 flex items-center justify-center">
-          <div className="w-full border-t border-outline-variant/30" />
-          <span className="absolute bg-surface-container-lowest px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-outline">
-            Quick Exploration
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleDemoLogin}
-          className="w-full flex items-center justify-center gap-2 rounded-xl border border-primary-container/30 bg-primary-container/10 py-2.5 text-xs font-bold text-primary hover:bg-primary-container/20 transition"
-        >
-          <BoltIcon size={16} />
-          <span>1-Click Instant Demo Login (Jigyansh)</span>
-        </button>
-
-        <p className="mt-3.5 text-center text-xs text-on-surface-variant">
+        <p className="mt-5 text-center text-xs text-on-surface-variant">
           Already have an account?{" "}
           <Link
             href="/login"

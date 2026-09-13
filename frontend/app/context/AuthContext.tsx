@@ -70,8 +70,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginAsDemo = () => {
     const demoUser: User = {
       id: "demo-user-1",
-      name: "Jigyansh",
-      email: "jigyansh@linkly.app",
+      name: "Demo User",
+      email: "demo@example.com",
     };
     const demoToken = "demo-jwt-token-sample";
     login(demoToken, demoUser);

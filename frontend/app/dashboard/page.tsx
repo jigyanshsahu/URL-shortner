@@ -115,7 +115,7 @@ export default function DashboardPage() {
         token,
       });
       setQuickMsg({
-        text: `Link created: linkly.app/${res.shortCode || quickAlias}`,
+        text: `Link created: ${res.shortUrl || '/' + (res.shortCode || quickAlias)}`,
       });
       setQuickUrl("");
       setQuickAlias("");
@@ -330,16 +330,13 @@ export default function DashboardPage() {
                 />
               </div>
 
-              <div className="flex items-center h-10 px-3 rounded-xl bg-surface-container-low border border-outline-variant/30 sm:w-56">
-                <span className="font-mono text-xs text-on-surface-variant select-none">
-                  linkly.app/
-                </span>
+              <div className="flex items-center h-10 px-3 rounded-xl bg-surface-container-low border border-outline-variant/30 sm:w-56 focus-within:border-primary-container transition-all">
                 <input
                   type="text"
                   value={quickAlias}
                   onChange={(e) => setQuickAlias(e.target.value)}
-                  placeholder="custom-slug"
-                  className="w-full bg-transparent font-mono text-xs font-semibold text-primary focus:outline-none ml-0.5"
+                  placeholder="Custom alias (optional)"
+                  className="w-full bg-transparent text-xs text-on-surface placeholder:text-outline focus:outline-none"
                 />
               </div>
 

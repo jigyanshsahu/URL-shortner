@@ -23,7 +23,7 @@ export default function Features() {
       id: "branding",
       renderIcon: () => <TagIcon size={22} />,
       title: "Custom Vanity Aliases",
-      desc: "Claim branded, memorable slugs like linkly.app/launch for higher click-through rates and campaign brand consistency.",
+      desc: "Claim branded, memorable custom slugs for higher click-through rates and clean link sharing.",
       tag: "BRANDING",
     },
     {
