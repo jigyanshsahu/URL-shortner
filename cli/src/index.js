@@ -5,9 +5,6 @@ import ora from "ora";
 import inquirer from "inquirer";
 import figlet from "figlet";
 import boxen from "boxen";
-import crypto from "crypto";
-import pool from "./db.js";
-
 const API_URL = process.env.URL_SHORTENER_API_URL || "http://localhost:5000";
 
 function displayBanner() {
@@ -54,8 +51,17 @@ async function shortenUrl(targetUrl) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ url: targetUrl }),
         });
+
+        const contentType = response.headers.get("content-type");
+        if (!response.ok) {
+            if (contentType && contentType.includes("application/json")) {
+                const errData = await response.json();
+                throw new Error(errData.error || `Server responded with status ${response.status}`);
+            }
+            throw new Error(`Server returned HTTP ${response.status} (${response.statusText}). Could not reach API at ${API_URL}`);
+        }
+
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Failed to shorten URL");
         spinner.succeed(chalk.green("Short URL created successfully!"));
         console.log(boxen(
             `${chalk.bold("Short URL:   ")} ${chalk.cyan.bold(data.shortUrl)}\n` +
@@ -64,7 +70,7 @@ async function shortenUrl(targetUrl) {
         ));
     } catch (error) {
         spinner.fail(chalk.red("Failed to shorten URL"));
-        console.error(chalk.red(`\n✗ Error: ${error.message}`));
+        console.error(chalk.red(`\n✗ Error: ${error.message}\n`));
     }
 }
 
@@ -117,22 +123,18 @@ async function main() {
     const args = process.argv.slice(2);
     const rawUrl = args[0] === "shorten" ? args[1] : args[0];
 
-    try {
-        if (rawUrl) {
-            // Direct argument mode
-            const validatedUrl = normalizeUrl(rawUrl);
-            if (!validatedUrl) {
-                console.error(chalk.red.bold("✗ Error: ") + chalk.red(`"${rawUrl}" is not a valid URL.\n`));
-                process.exitCode = 1;
-                return;
-            }
-            await shortenUrl(validatedUrl);
-        } else {
-            // Interactive prompt mode
-            await runInteractivePrompt();
+    if (rawUrl) {
+        // Direct argument mode
+        const validatedUrl = normalizeUrl(rawUrl);
+        if (!validatedUrl) {
+            console.error(chalk.red.bold("✗ Error: ") + chalk.red(`"${rawUrl}" is not a valid URL.\n`));
+            process.exitCode = 1;
+            return;
         }
-    } finally {
-        await pool.end();
+        await shortenUrl(validatedUrl);
+    } else {
+        // Interactive prompt mode
+        await runInteractivePrompt();
     }
 }
 
