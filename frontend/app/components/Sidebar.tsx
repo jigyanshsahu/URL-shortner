@@ -53,9 +53,9 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
   const navContent = (
     <div className="flex flex-col justify-between h-full py-6 px-4">
       <div className="flex flex-col gap-6">
-        {/* Logo and edge tag */}
+        {/* Logo */}
         <div className="px-2">
-          <Logo size="md" showBadge badgeText="v2.4-edge" href="/dashboard" />
+          <Logo size="md" href="/dashboard" />
         </div>
 
         {/* Action Button */}
@@ -66,7 +66,7 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
               setMobileOpen(false);
             }}
             type="button"
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-primary-container text-on-primary font-medium text-sm shadow-sm hover:bg-primary transition-all active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-[0_0_20px_rgba(99,102,241,0.35)] border border-indigo-400/20 transition-all active:scale-[0.98]"
           >
             <PlusIcon size={18} />
             <span>Create Short Link</span>
@@ -82,10 +82,10 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                   isActive
-                    ? "bg-primary-container text-on-primary shadow-sm"
-                    : "text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
+                    ? "bg-indigo-500/15 text-indigo-300 border border-indigo-500/25 shadow-xs"
+                    : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
                 }`}
               >
                 {renderNavIcon(item.icon, isActive)}
@@ -97,17 +97,17 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
       </div>
 
       {/* User profile & logout footer */}
-      <div className="flex flex-col gap-3 pt-4 border-t border-outline-variant/30">
+      <div className="flex flex-col gap-3 pt-4 border-t border-white/[0.08]">
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-full bg-primary-container/15 text-primary-container font-semibold flex items-center justify-center text-sm ring-1 ring-primary-container/25 shrink-0">
-              {user?.name ? user.name.charAt(0).toUpperCase() : "J"}
+            <div className="w-9 h-9 rounded-full bg-indigo-500/20 text-indigo-300 font-semibold flex items-center justify-center text-sm ring-1 ring-indigo-500/30 shrink-0">
+              {user?.name ? user.name.charAt(0).toUpperCase() : "D"}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-xs font-semibold text-on-surface truncate">
-                {user?.name || "Jigyansh"}
+              <span className="text-xs font-semibold text-zinc-100 truncate">
+                {user?.name || "Developer"}
               </span>
-              <span className="font-mono text-[11px] text-on-surface-variant">
+              <span className="font-mono text-[11px] text-zinc-400">
                 Free Developer Tier
               </span>
             </div>
@@ -116,7 +116,7 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
             onClick={handleLogout}
             type="button"
             title="Log out"
-            className="p-1.5 rounded-xl text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors"
+            className="p-1.5 rounded-xl text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
           >
             <LogOutIcon size={18} />
           </button>
@@ -128,18 +128,18 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
   return (
     <>
       {/* Desktop Fixed Sidebar */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r border-outline-variant/30 z-40 flex-col">
+      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-[#09090b] border-r border-white/[0.08] z-40 flex-col">
         {navContent}
       </aside>
 
       {/* Mobile Top Navbar Bar with Drawer Trigger */}
-      <div className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30">
-        <Logo size="sm" showBadge badgeText="v2.4" href="/dashboard" />
+      <div className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-[#09090b]/90 backdrop-blur-md border-b border-white/[0.08]">
+        <Logo size="sm" href="/dashboard" />
         <div className="flex items-center gap-2">
           {onOpenCreateModal && (
             <button
               onClick={onOpenCreateModal}
-              className="p-2 rounded-lg bg-primary-container text-on-primary"
+              className="p-2 rounded-lg bg-indigo-600 text-white shadow-xs"
               type="button"
             >
               <PlusIcon size={20} />
@@ -147,7 +147,7 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
           )}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high"
+            className="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800"
             type="button"
             aria-label="Toggle menu"
           >
@@ -160,10 +160,10 @@ export default function Sidebar({ onOpenCreateModal }: SidebarProps) {
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div
-            className="fixed inset-0 bg-on-surface/40 backdrop-blur-xs"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="relative w-64 max-w-[80vw] h-full bg-surface-container-low shadow-xl z-50">
+          <div className="relative w-64 max-w-[80vw] h-full bg-[#09090b] border-r border-white/10 shadow-2xl z-50">
             {navContent}
           </div>
         </div>

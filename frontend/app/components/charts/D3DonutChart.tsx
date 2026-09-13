@@ -16,12 +16,12 @@ interface D3DonutChartProps {
 }
 
 const DEFAULT_COLORS = [
-  "#4F46E5", // Primary Indigo
-  "#6063EE", // Secondary Indigo
-  "#006E4B", // Tertiary Emerald
-  "#E11D48", // Rose
-  "#D97706", // Amber
-  "#0284C7", // Sky
+  "#6366F1", // Indigo 500
+  "#818CF8", // Indigo 400
+  "#10B981", // Emerald 500
+  "#F43F5E", // Rose 500
+  "#F59E0B", // Amber 500
+  "#38BDF8", // Sky 400
 ];
 
 export default function D3DonutChart({

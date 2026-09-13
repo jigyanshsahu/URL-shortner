@@ -274,9 +274,9 @@ export default function D3TimelineChart({
             top: `${tooltip.y}px`,
             transform: "translate(-50%, -100%)",
           }}
-          className="pointer-events-none absolute z-20 px-3 py-1.5 rounded-xl bg-inverse-surface text-inverse-on-surface shadow-xl text-xs font-mono border border-outline-variant/30 flex items-center gap-2 animate-in fade-in zoom-in-95 duration-100"
+          className="pointer-events-none absolute z-20 px-3 py-1.5 rounded-xl bg-[#0e0e12]/95 backdrop-blur-md text-zinc-100 shadow-2xl text-xs font-mono border border-white/20 flex items-center gap-2 animate-in fade-in zoom-in-95 duration-100"
         >
-          <span className="font-semibold text-primary-fixed">{tooltip.date}:</span>
+          <span className="font-semibold text-indigo-400">{tooltip.date}:</span>
           <span className="font-bold text-white">{tooltip.clicks.toLocaleString()} clicks</span>
         </div>
       )}

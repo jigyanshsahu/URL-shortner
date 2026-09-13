@@ -116,22 +116,22 @@ export default function RecentLinks({
       {/* Control bar: Search, filter & sort */}
       {showAllControls && (
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-surface-container-lowest p-3.5 rounded-2xl border border-outline-variant/40 shadow-xs">
-          {/* Search Input */}
-          <div className="relative flex-1">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">
+          {/* Search bar */}
+          <div className="relative w-full sm:w-72">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
               <SearchIcon size={18} />
             </div>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by short code or destination URL..."
-              className="w-full h-9 pl-9 pr-8 rounded-xl bg-surface-container-low text-xs text-on-surface placeholder:text-outline border border-outline-variant/30 focus:border-primary-container focus:bg-surface-container-lowest focus:outline-none transition-all"
+              placeholder="Search by slug or target URL..."
+              className="w-full h-10 pl-9 pr-8 rounded-xl bg-[#14141a] text-xs text-zinc-100 placeholder:text-zinc-500 border border-white/10 focus:border-indigo-500/80 focus:ring-1 focus:ring-indigo-500/30 transition-all outline-none"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface text-xs"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-200 text-xs"
               >
                 ✕
               </button>
@@ -140,13 +140,13 @@ export default function RecentLinks({
 
           {/* Filter tabs & Sort */}
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center bg-surface-container-low p-1 rounded-xl border border-outline-variant/30">
+            <div className="flex items-center bg-[#14141a] p-1 rounded-xl border border-white/10">
               <button
                 onClick={() => setStatusFilter("all")}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   statusFilter === "all"
-                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
-                    : "text-on-surface-variant hover:text-on-surface"
+                    ? "bg-zinc-800 text-zinc-100 shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 All ({links.length})
@@ -155,8 +155,8 @@ export default function RecentLinks({
                 onClick={() => setStatusFilter("active")}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   statusFilter === "active"
-                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
-                    : "text-on-surface-variant hover:text-on-surface"
+                    ? "bg-zinc-800 text-zinc-100 shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 Active ({links.filter((l) => !isExpired(l)).length})
@@ -165,8 +165,8 @@ export default function RecentLinks({
                 onClick={() => setStatusFilter("expired")}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   statusFilter === "expired"
-                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
-                    : "text-on-surface-variant hover:text-on-surface"
+                    ? "bg-zinc-800 text-zinc-100 shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 Expired ({links.filter(isExpired).length})
@@ -176,29 +176,29 @@ export default function RecentLinks({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as "newest" | "clicks")}
-              className="h-9 px-3 rounded-xl bg-surface-container-low border border-outline-variant/30 text-xs font-medium text-on-surface-variant focus:outline-none cursor-pointer"
+              className="h-9 px-3 rounded-xl bg-[#14141a] border border-white/10 text-xs font-medium text-zinc-300 focus:outline-none cursor-pointer"
             >
-              <option value="newest">Sort: Newest</option>
-              <option value="clicks">Sort: Most Clicks</option>
+              <option value="newest" className="bg-zinc-900 text-zinc-200">Sort: Newest</option>
+              <option value="clicks" className="bg-zinc-900 text-zinc-200">Sort: Most Clicks</option>
             </select>
           </div>
         </div>
       )}
 
       {/* Table Container */}
-      <div className="w-full bg-surface-container-lowest rounded-2xl border border-outline-variant/40 shadow-xs overflow-hidden">
+      <div className="w-full bg-[#0e0e12]/80 backdrop-blur-sm rounded-2xl border border-white/10 shadow-xl overflow-hidden">
         {loading ? (
-          <div className="p-12 flex flex-col items-center justify-center text-on-surface-variant gap-3">
-            <RefreshIcon size={32} className="text-primary animate-spin" />
+          <div className="p-12 flex flex-col items-center justify-center text-zinc-400 gap-3">
+            <RefreshIcon size={32} className="text-indigo-400 animate-spin" />
             <span className="text-xs font-medium">Loading link telemetry...</span>
           </div>
         ) : filteredLinks.length === 0 ? (
           <div className="p-12 flex flex-col items-center justify-center text-center">
-            <div className="w-12 h-12 rounded-2xl bg-surface-container-high flex items-center justify-center text-outline mb-3">
+            <div className="w-12 h-12 rounded-2xl bg-zinc-800/80 border border-white/5 flex items-center justify-center text-zinc-400 mb-3">
               <LinkIcon size={24} />
             </div>
-            <p className="text-sm font-semibold text-on-surface">No links found</p>
-            <p className="text-xs text-on-surface-variant mt-1 max-w-sm">
+            <p className="text-sm font-semibold text-zinc-200">No links found</p>
+            <p className="text-xs text-zinc-400 mt-1 max-w-sm">
               {searchQuery
                 ? "No shortened links match your filter criteria."
                 : "Create your first shortened link to view performance telemetry."}
@@ -208,7 +208,7 @@ export default function RecentLinks({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="h-10 bg-surface-container-low/60 border-b border-outline-variant/30 text-[11px] uppercase font-bold text-outline tracking-wider font-mono">
+                <tr className="h-10 bg-[#14141a]/60 border-b border-white/10 text-[11px] uppercase font-bold text-zinc-400 tracking-wider font-mono">
                   <th className="py-2.5 px-4 font-semibold">Short Link</th>
                   <th className="py-2.5 px-4 font-semibold hidden md:table-cell">
                     Destination URL
@@ -218,7 +218,7 @@ export default function RecentLinks({
                   <th className="py-2.5 px-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-outline-variant/20">
+              <tbody className="divide-y divide-white/[0.06]">
                 {filteredLinks.map((item) => {
                   const expired = isExpired(item);
                   const isCopied = copiedCode === item.short_code;
@@ -227,7 +227,7 @@ export default function RecentLinks({
                   return (
                     <tr
                       key={item.id}
-                      className={`hover:bg-surface-container-low/50 transition-colors ${
+                      className={`hover:bg-zinc-800/30 transition-colors ${
                         isDeleting ? "opacity-30" : ""
                       }`}
                     >
@@ -238,30 +238,30 @@ export default function RecentLinks({
                             onClick={() => copyToClipboard(item.short_code)}
                             type="button"
                             title="Copy short link"
-                            className="font-mono text-xs font-bold text-primary hover:underline flex items-center gap-1 group"
+                            className="font-mono text-xs font-bold text-indigo-400 hover:text-indigo-300 hover:underline flex items-center gap-1 group"
                           >
                             <span>/{item.short_code}</span>
-                            <span className="text-outline group-hover:text-primary">
+                            <span className="text-zinc-500 group-hover:text-indigo-400">
                               {isCopied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
                             </span>
                           </button>
                         </div>
-                        <div className="text-[11px] text-outline font-mono mt-0.5 md:hidden truncate max-w-[200px]">
+                        <div className="text-[11px] text-zinc-500 font-mono mt-0.5 md:hidden truncate max-w-[200px]">
                           {item.original_url}
                         </div>
                       </td>
 
                       {/* Destination URL */}
                       <td className="py-3.5 px-4 hidden md:table-cell max-w-xs lg:max-w-md">
-                        <p className="text-xs text-on-surface-variant truncate">
+                        <p className="text-xs text-zinc-400 truncate">
                           {item.original_url}
                         </p>
                       </td>
 
                       {/* Clicks */}
                       <td className="py-3.5 px-4 text-center">
-                        <span className="inline-flex items-center gap-1 font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-surface-container-high text-on-surface">
-                          <AdsClickIcon size={14} className="text-primary" />
+                        <span className="inline-flex items-center gap-1 font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[#181822] text-zinc-200 border border-white/5">
+                          <AdsClickIcon size={14} className="text-indigo-400" />
                           {item.click_count || 0}
                         </span>
                       </td>
@@ -269,13 +269,13 @@ export default function RecentLinks({
                       {/* Status */}
                       <td className="py-3.5 px-4 text-center">
                         {expired ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-surface-container-high text-on-surface-variant">
-                            <span className="w-1.5 h-1.5 rounded-full bg-outline" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-800/60 text-zinc-400 border border-white/5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
                             Expired
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-tertiary-container/15 text-tertiary-container border border-tertiary-container/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                             Active
                           </span>
                         )}
@@ -288,7 +288,7 @@ export default function RecentLinks({
                             onClick={() => onOpenQr(item.short_code, item.id)}
                             type="button"
                             title="QR Code"
-                            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                            className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
                           >
                             <QrCodeIcon size={18} />
                           </button>
@@ -297,7 +297,7 @@ export default function RecentLinks({
                             onClick={() => onOpenAnalytics(item.short_code, item.id)}
                             type="button"
                             title="Analytics"
-                            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors"
+                            className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-indigo-400 transition-colors"
                           >
                             <InsightsIcon size={18} />
                           </button>
@@ -305,17 +305,18 @@ export default function RecentLinks({
                           <button
                             onClick={() => onOpenEdit(item)}
                             type="button"
-                            title="Edit URL"
-                            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                            title="Edit alias or destination"
+                            className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
                           >
                             <EditIcon size={18} />
                           </button>
 
                           <button
                             onClick={() => handleDelete(item.id)}
+                            disabled={isDeleting}
                             type="button"
-                            title="Delete"
-                            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors"
+                            title="Delete link"
+                            className="p-1.5 rounded-lg text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
                           >
                             <TrashIcon size={18} />
                           </button>

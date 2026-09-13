@@ -86,7 +86,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-surface text-on-surface">
+    <main className="min-h-screen bg-[#09090b] text-zinc-100">
       <Navbar />
 
       <Hero
@@ -102,13 +102,13 @@ export default function Home() {
         <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto animate-in fade-in duration-300">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
             <div>
-              <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold px-3 py-1 rounded-full bg-surface-container-high">
+              <span className="font-mono text-xs uppercase tracking-widest text-indigo-400 font-bold px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20">
                 YOUR ACTIVE LINKS
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight mt-2">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 tracking-tight mt-2">
                 Your Link Directory
               </h2>
-              <p className="text-xs sm:text-sm text-on-surface-variant mt-1">
+              <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                 Active routes being serviced by our Redis in-memory cache layer.
               </p>
             </div>

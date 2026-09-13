@@ -47,11 +47,11 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
     >
       <body
         suppressHydrationWarning
-        className="min-h-full flex flex-col bg-surface text-on-surface font-sans selection:bg-primary-container selection:text-on-primary"
+        className="min-h-full flex flex-col bg-[#09090b] text-[#f4f4f5] font-sans selection:bg-indigo-600 selection:text-white"
       >
         <AuthProvider>{children}</AuthProvider>
       </body>

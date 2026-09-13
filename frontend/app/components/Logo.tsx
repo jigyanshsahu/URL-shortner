@@ -59,12 +59,12 @@ export default function Logo({
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5">
           <span
-            className={`font-semibold tracking-tight text-on-surface ${textSizes} leading-none`}
+            className={`font-bold tracking-tight text-zinc-100 ${textSizes} leading-none`}
           >
             Linkly
           </span>
           {showBadge && (
-            <span className="font-mono text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded bg-surface-container-high text-primary leading-none">
+            <span className="font-mono text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 leading-none">
               {badgeText}
             </span>
           )}

@@ -132,7 +132,7 @@ export default function AnalyticsPage() {
   }, [analyticsData]);
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 flex flex-col lg:flex-row">
       <Sidebar onOpenCreateModal={() => setCreateModalOpen(true)} />
 
       <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
@@ -143,14 +143,14 @@ export default function AnalyticsPage() {
 
         <main className="p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-7xl">
           {/* Controls Bar: Time range & Link selector */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container-lowest p-3.5 rounded-2xl border border-outline-variant/40 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0e0e12]/80 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 shadow-xs">
             {/* Link Selector */}
             <div className="flex items-center gap-2">
-              <FilterIcon size={18} className="text-outline" />
+              <FilterIcon size={18} className="text-zinc-400" />
               <select
                 value={selectedLinkId}
                 onChange={(e) => setSelectedLinkId(e.target.value)}
-                className="h-9 px-3 rounded-xl bg-surface-container-low border border-outline-variant/30 text-xs font-semibold text-on-surface focus:outline-none cursor-pointer max-w-[240px] truncate"
+                className="h-9 px-3 rounded-xl bg-[#14141a] border border-white/10 text-xs font-semibold text-zinc-200 focus:outline-none focus:border-indigo-500 cursor-pointer max-w-[240px] truncate"
               >
                 <option value="all">All Links (Aggregated)</option>
                 {links.map((l) => (
@@ -162,13 +162,13 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Time Period Tabs */}
-            <div className="flex items-center bg-surface-container-low p-1 rounded-xl border border-outline-variant/30">
+            <div className="flex items-center bg-[#14141a] p-1 rounded-xl border border-white/10">
               <button
                 onClick={() => setTimeRange("24h")}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   timeRange === "24h"
-                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
-                    : "text-on-surface-variant hover:text-on-surface"
+                    ? "bg-indigo-600 text-white shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 24 Hours
@@ -177,8 +177,8 @@ export default function AnalyticsPage() {
                 onClick={() => setTimeRange("7d")}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   timeRange === "7d"
-                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
-                    : "text-on-surface-variant hover:text-on-surface"
+                    ? "bg-indigo-600 text-white shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 Last 7 Days
@@ -187,8 +187,8 @@ export default function AnalyticsPage() {
                 onClick={() => setTimeRange("30d")}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   timeRange === "30d"
-                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
-                    : "text-on-surface-variant hover:text-on-surface"
+                    ? "bg-indigo-600 text-white shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 Last 30 Days
@@ -197,8 +197,8 @@ export default function AnalyticsPage() {
                 onClick={() => setTimeRange("all")}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   timeRange === "all"
-                    ? "bg-surface-container-lowest text-on-surface shadow-xs"
-                    : "text-on-surface-variant hover:text-on-surface"
+                    ? "bg-indigo-600 text-white shadow-xs"
+                    : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 All Time
@@ -208,75 +208,75 @@ export default function AnalyticsPage() {
 
           {/* 4 Analytics KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex flex-col justify-between">
+            <div className="p-5 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex flex-col justify-between">
               <div>
-                <span className="text-[11px] uppercase tracking-wider text-outline font-mono font-bold">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-bold">
                   Total Impressions
                 </span>
-                <div className="text-2xl font-extrabold text-on-surface mt-1">
+                <div className="text-2xl font-extrabold text-zinc-100 mt-1">
                   {mounted ? totalStats.totalClicks.toLocaleString() : "482,910"}
                 </div>
               </div>
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/20 text-xs">
-                <span className="text-tertiary-container font-semibold flex items-center gap-0.5">
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.08] text-xs">
+                <span className="text-emerald-400 font-semibold flex items-center gap-0.5">
                   <ArrowUpIcon size={14} />
                   +24.2%
                 </span>
-                <span className="text-outline text-[11px]">vs previous</span>
+                <span className="text-zinc-500 text-[11px]">vs previous</span>
               </div>
             </div>
 
-            <div className="p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex flex-col justify-between">
+            <div className="p-5 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex flex-col justify-between">
               <div>
-                <span className="text-[11px] uppercase tracking-wider text-outline font-mono font-bold">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-bold">
                   Unique Visitors
                 </span>
-                <div className="text-2xl font-extrabold text-on-surface mt-1">
+                <div className="text-2xl font-extrabold text-zinc-100 mt-1">
                   {mounted ? totalStats.uniqueVisitors.toLocaleString() : "318,720"}
                 </div>
               </div>
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/20 text-xs">
-                <span className="text-primary font-mono text-[11px] font-semibold">
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.08] text-xs">
+                <span className="text-indigo-400 font-mono text-[11px] font-semibold">
                   65.9% unique ratio
                 </span>
-                <span className="text-outline text-[11px]">IP hashed</span>
+                <span className="text-zinc-500 text-[11px]">IP hashed</span>
               </div>
             </div>
 
-            <div className="p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex flex-col justify-between">
+            <div className="p-5 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex flex-col justify-between">
               <div>
-                <span className="text-[11px] uppercase tracking-wider text-outline font-mono font-bold">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-bold">
                   Avg Redirect Latency
                 </span>
-                <div className="text-2xl font-extrabold text-primary mt-1 font-mono flex items-center gap-1.5">
+                <div className="text-2xl font-extrabold text-indigo-400 mt-1 font-mono flex items-center gap-1.5">
                   <BoltIcon size={20} />
                   <span>{totalStats.avgLatency} ms</span>
                 </div>
               </div>
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/20 text-xs font-mono">
-                <span className="text-tertiary-container font-semibold">
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.08] text-xs font-mono">
+                <span className="text-emerald-400 font-semibold">
                   Redis RAM HIT: 99.4%
                 </span>
-                <span className="text-outline text-[11px]">Sub-10ms</span>
+                <span className="text-zinc-500 text-[11px]">Sub-10ms</span>
               </div>
             </div>
 
-            <div className="p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex flex-col justify-between">
+            <div className="p-5 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex flex-col justify-between">
               <div>
-                <span className="text-[11px] uppercase tracking-wider text-outline font-mono font-bold">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-bold">
                   Global Edge Nodes
                 </span>
-                <div className="text-2xl font-extrabold text-on-surface mt-1 font-mono flex items-center gap-1.5">
-                  <PublicIcon size={20} className="text-primary" />
+                <div className="text-2xl font-extrabold text-zinc-100 mt-1 font-mono flex items-center gap-1.5">
+                  <PublicIcon size={20} className="text-indigo-400" />
                   <span>18 Regions</span>
                 </div>
               </div>
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/20 text-xs font-mono">
-                <span className="inline-flex items-center gap-1 text-tertiary-container font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse" />
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.08] text-xs font-mono">
+                <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   Optimal Health
                 </span>
-                <span className="text-outline text-[11px]">Anycast</span>
+                <span className="text-zinc-500 text-[11px]">Anycast</span>
               </div>
             </div>
           </div>
@@ -284,27 +284,27 @@ export default function AnalyticsPage() {
           {/* Visual D3.js Click Volume Chart & Referrers Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Click Volume Chart with D3.js (2 cols) */}
-            <div className="lg:col-span-2 p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex flex-col justify-between">
+            <div className="lg:col-span-2 p-5 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
                     <InsightsIcon size={18} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-on-surface">Click Volume Timeline (D3.js)</h3>
-                    <p className="text-xs text-on-surface-variant">
+                    <h3 className="text-sm font-bold text-zinc-100">Click Volume Timeline (D3.js)</h3>
+                    <p className="text-xs text-zinc-400">
                       Aggregated traffic distributed across {timeRange.toUpperCase()} interval.
                     </p>
                   </div>
                 </div>
-                <span className="font-mono text-xs font-bold text-primary px-2 py-0.5 rounded bg-surface-container-high">
+                <span className="font-mono text-xs font-bold text-indigo-400 px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
                   LIVE TELEMETRY
                 </span>
               </div>
 
               {/* D3 Chart Visualizer */}
               {loading ? (
-                <div className="h-60 flex items-center justify-center text-on-surface-variant text-xs">
+                <div className="h-60 flex items-center justify-center text-zinc-400 text-xs">
                   Loading timeline...
                 </div>
               ) : (
@@ -313,21 +313,21 @@ export default function AnalyticsPage() {
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-3 border-t border-outline-variant/20 text-xs text-on-surface-variant font-mono">
+              <div className="flex items-center justify-between pt-3 border-t border-white/[0.08] text-xs text-zinc-400 font-mono">
                 <span>Peak: 142 req/min</span>
-                <span>Asynchronous BullMQ worker queue active</span>
+                <span className="text-emerald-400">BullMQ worker queue active</span>
               </div>
             </div>
 
             {/* Top Traffic Referrers with D3.js Donut (1 col) */}
-            <div className="p-5 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex flex-col justify-between">
+            <div className="p-5 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
                       <ShareIcon size={18} />
                     </div>
-                    <h3 className="text-sm font-bold text-on-surface">Referrer Breakdown (D3.js)</h3>
+                    <h3 className="text-sm font-bold text-zinc-100">Referrer Breakdown (D3.js)</h3>
                   </div>
                 </div>
 
@@ -336,7 +336,7 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-outline-variant/30 text-[11px] text-outline font-mono">
+              <div className="pt-4 border-t border-white/[0.08] text-[11px] text-zinc-500 font-mono">
                 Full referrer logging enabled
               </div>
             </div>
@@ -346,24 +346,24 @@ export default function AnalyticsPage() {
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-on-surface">
+                <h3 className="text-base font-bold text-zinc-100">
                   Live Click Stream (Telemetry Feed)
                 </h3>
-                <p className="text-xs text-on-surface-variant">
+                <p className="text-xs text-zinc-400">
                   Recent redirect events processed by our decoupled edge worker.
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-container/15 text-tertiary-container text-[11px] font-mono font-bold">
-                <span className="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-mono font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 LIVE STREAM
               </span>
             </div>
 
-            <div className="w-full bg-surface-container-lowest rounded-2xl border border-outline-variant/40 shadow-xs overflow-hidden">
+            <div className="w-full bg-[#0e0e12]/80 backdrop-blur-md rounded-2xl border border-white/10 shadow-xs overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="h-10 bg-surface-container-low/60 border-b border-outline-variant/30 text-[11px] uppercase font-bold text-outline tracking-wider font-mono">
+                    <tr className="h-10 bg-[#14141a]/80 border-b border-white/10 text-[11px] uppercase font-bold text-zinc-400 tracking-wider font-mono">
                       <th className="py-2.5 px-4 font-semibold">Timestamp</th>
                       <th className="py-2.5 px-4 font-semibold">IP & Location</th>
                       <th className="py-2.5 px-4 font-semibold">User Agent / Platform</th>
@@ -371,23 +371,23 @@ export default function AnalyticsPage() {
                       <th className="py-2.5 px-4 font-semibold text-right">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-outline-variant/20 font-mono text-xs">
+                  <tbody className="divide-y divide-white/[0.06] font-mono text-xs">
                     {(analyticsData?.recentClicks || fallbackRecentClicks).map((click, idx) => (
-                      <tr key={idx} className="hover:bg-surface-container-low/50 transition-colors">
-                        <td className="py-3 px-4 text-on-surface-variant font-mono text-[11px]">
+                      <tr key={idx} className="hover:bg-white/[0.03] transition-colors">
+                        <td className="py-3 px-4 text-zinc-400 font-mono text-[11px]">
                           {click.clicked_at.slice(11, 19)}
                         </td>
-                        <td className="py-3 px-4 font-semibold text-on-surface">
+                        <td className="py-3 px-4 font-semibold text-zinc-200">
                           {click.ip_address || "127.0.0.1 (Local)"}
                         </td>
-                        <td className="py-3 px-4 text-on-surface-variant truncate max-w-xs font-sans text-xs">
+                        <td className="py-3 px-4 text-zinc-400 truncate max-w-xs font-sans text-xs">
                           {click.user_agent || "Browser Client"}
                         </td>
-                        <td className="py-3 px-4 text-primary font-mono text-xs">
+                        <td className="py-3 px-4 text-indigo-400 font-mono text-xs">
                           {click.referrer || "Direct"}
                         </td>
                         <td className="py-3 px-4 text-right">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-tertiary-container/15 text-tertiary-container">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                             302 FOUND
                           </span>
                         </td>

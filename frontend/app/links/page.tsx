@@ -81,7 +81,7 @@ export default function LinksPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 flex flex-col lg:flex-row">
       <Sidebar onOpenCreateModal={() => setCreateModalOpen(true)} />
 
       <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
@@ -93,72 +93,72 @@ export default function LinksPage() {
         />
 
         <main className="p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-7xl">
-          {/* Summary Stat Pills */}
+          {/* Summary Stat Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex items-center justify-between">
               <div>
-                <span className="text-[11px] uppercase tracking-wider text-outline font-mono font-bold">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-bold">
                   Total Links
                 </span>
-                <div className="text-xl font-extrabold text-on-surface mt-0.5">
+                <div className="text-xl font-extrabold text-zinc-100 mt-0.5">
                   {stats.total.toLocaleString()}
                 </div>
-                <span className="text-[11px] text-tertiary-container font-mono">
+                <span className="text-[11px] text-emerald-400 font-mono">
                   All active domains
                 </span>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
                 <LinkIcon size={20} />
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex items-center justify-between">
               <div>
-                <span className="text-[11px] uppercase tracking-wider text-outline font-mono font-bold">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-bold">
                   Total Clicks
                 </span>
-                <div className="text-xl font-extrabold text-on-surface mt-0.5">
+                <div className="text-xl font-extrabold text-zinc-100 mt-0.5">
                   {stats.totalClicks.toLocaleString()}
                 </div>
-                <span className="text-[11px] text-tertiary-container font-mono">
+                <span className="text-[11px] text-emerald-400 font-mono">
                   +18.4% this week
                 </span>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
                 <AdsClickIcon size={20} />
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex items-center justify-between">
               <div>
-                <span className="text-[11px] uppercase tracking-wider text-outline font-mono font-bold">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-bold">
                   Active Health
                 </span>
-                <div className="text-xl font-extrabold text-on-surface mt-0.5">
+                <div className="text-xl font-extrabold text-zinc-100 mt-0.5">
                   {stats.active.toLocaleString()}
                 </div>
-                <span className="text-[11px] text-on-surface-variant font-mono">
+                <span className="text-[11px] text-zinc-400 font-mono">
                   {stats.total ? Math.round((stats.active / stats.total) * 100) : 100}% ratio
                 </span>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
                 <VerifiedIcon size={20} />
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 shadow-xs flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-md border border-white/10 shadow-xs flex items-center justify-between">
               <div>
-                <span className="text-[11px] uppercase tracking-wider text-outline font-mono font-bold">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono font-bold">
                   Expiring Soon
                 </span>
-                <div className="text-xl font-extrabold text-on-surface mt-0.5">
+                <div className="text-xl font-extrabold text-zinc-100 mt-0.5">
                   {stats.expiredSoon}
                 </div>
-                <span className="text-[11px] text-error font-mono">
+                <span className="text-[11px] text-red-400 font-mono">
                   {stats.expiredSoon > 0 ? "Review expiration" : "All healthy"}
                 </span>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-outline">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
                 <TimerIcon size={20} />
               </div>
             </div>
@@ -168,8 +168,8 @@ export default function LinksPage() {
           <div className="flex flex-col gap-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h2 className="text-lg font-bold text-on-surface">Link Directory</h2>
-                <p className="text-xs text-on-surface-variant">
+                <h2 className="text-lg font-bold text-zinc-100">Link Directory</h2>
+                <p className="text-xs text-zinc-400">
                   Manage targets, vanity custom aliases, expiration timers, and QR codes.
                 </p>
               </div>
@@ -177,7 +177,7 @@ export default function LinksPage() {
               <button
                 onClick={() => setCreateModalOpen(true)}
                 type="button"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary-container hover:bg-primary text-on-primary text-xs font-bold shadow-xs transition-all active:scale-95 self-start sm:self-auto"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 border border-indigo-400/20 transition-all active:scale-95 self-start sm:self-auto"
               >
                 <PlusIcon size={16} />
                 <span>New Short Link</span>

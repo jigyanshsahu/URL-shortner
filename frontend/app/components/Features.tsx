@@ -59,13 +59,13 @@ export default function Features() {
   return (
     <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       <div className="text-center max-w-3xl mx-auto mb-16">
-        <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold px-3 py-1 rounded-full bg-surface-container-high">
+        <span className="font-mono text-xs uppercase tracking-widest text-indigo-400 font-bold px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20">
           ENGINEERING ARCHITECTURE
         </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight mt-4">
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-100 tracking-tight mt-4">
           Engineered for scale, speed, and precision
         </h2>
-        <p className="text-sm sm:text-base text-on-surface-variant mt-3">
+        <p className="text-sm sm:text-base text-zinc-400 mt-3">
           Every component in Linkly is tuned to provide microsecond response times and high availability.
         </p>
       </div>
@@ -74,26 +74,26 @@ export default function Features() {
         {features.map((item, idx) => (
           <div
             key={idx}
-            className="group relative p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/40 hover:border-primary-container/40 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+            className="group relative p-6 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-sm border border-white/10 hover:border-indigo-500/40 shadow-lg hover:shadow-[0_8px_30px_rgba(99,102,241,0.08)] transition-all flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-4">
-                <div className="w-10 h-10 rounded-xl bg-primary-container/10 text-primary flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs">
                   {item.renderIcon()}
                 </div>
-                <span className="font-mono text-[10px] font-bold tracking-wider text-outline px-2 py-0.5 rounded bg-surface-container-low">
+                <span className="font-mono text-[10px] font-bold tracking-wider text-zinc-400 px-2 py-0.5 rounded bg-zinc-900 border border-white/5">
                   {item.tag}
                 </span>
               </div>
-              <h3 className="text-base font-bold text-on-surface mb-2">
+              <h3 className="text-base font-bold text-zinc-100 mb-2">
                 {item.title}
               </h3>
-              <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
                 {item.desc}
               </p>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-outline-variant/30 flex items-center text-xs font-semibold text-primary">
+            <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center text-xs font-semibold text-indigo-400 group-hover:text-indigo-300 transition-colors">
               <span className="group-hover:mr-1 transition-all">Explore spec</span>
               <ArrowRightIcon size={16} className="ml-1" />
             </div>

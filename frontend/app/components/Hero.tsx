@@ -113,30 +113,31 @@ export default function Hero({
   return (
     <section
       id="shortener"
-      className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col items-center text-center overflow-hidden"
+      className="relative pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col items-center text-center overflow-hidden"
     >
-      {/* Subtle atmospheric glow */}
-      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[540px] h-[260px] bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10" />
+      {/* 21st.dev top atmospheric glow & subtle dot pattern */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[450px] bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(99,102,241,0.22),transparent)] pointer-events-none -z-10" />
+      <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_10%,#000_70%,transparent_100%)] opacity-40 pointer-events-none -z-10" />
 
       {/* Main Headline */}
-      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-on-surface max-w-3xl">
+      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-100 max-w-3xl">
         Shorten links.{" "}
-        <span className="bg-gradient-to-r from-primary-container to-secondary bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-indigo-400 via-indigo-300 to-indigo-500 bg-clip-text text-transparent">
           Track every click.
         </span>
       </h1>
 
       {/* Subheadline */}
-      <p className="text-base sm:text-lg text-on-surface-variant max-w-xl mt-4 mb-8 leading-relaxed">
+      <p className="text-base sm:text-lg text-zinc-400 max-w-xl mt-4 mb-8 leading-relaxed">
         Fast, clean URL shortener with instant redirects, custom vanity aliases, and real-time analytics.
       </p>
 
       {/* URL Shortener Interactive Box */}
-      <div className="w-full max-w-2xl bg-surface-container-lowest rounded-2xl border border-outline-variant/40 shadow-md p-3 sm:p-4 text-left relative">
+      <div className="w-full max-w-2xl bg-[#0e0e12]/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-3 sm:p-4 text-left relative">
         <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
           {/* Long URL Input */}
           <div className="relative flex items-center">
-            <div className="absolute left-3.5 pointer-events-none text-outline">
+            <div className="absolute left-3.5 pointer-events-none text-zinc-500">
               <LinkIcon size={20} />
             </div>
             <input
@@ -145,35 +146,35 @@ export default function Hero({
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Paste long URL (e.g. https://example.com/long-page-url)"
-              className="w-full h-12 pl-11 pr-4 bg-surface rounded-xl text-sm text-on-surface placeholder:text-outline border border-transparent focus:border-primary-container focus:bg-surface-bright focus:outline-none transition-all"
+              className="w-full h-12 pl-11 pr-4 bg-[#14141a] rounded-xl text-sm text-zinc-100 placeholder:text-zinc-500 border border-white/5 focus:border-indigo-500/80 focus:bg-[#181822] focus:ring-1 focus:ring-indigo-500/30 focus:outline-none transition-all"
             />
           </div>
 
           {/* Bottom Row: Vanity Alias, Expiration & CTA */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
             {/* Custom Alias Input */}
-            <div className="flex items-center flex-1 h-11 bg-surface rounded-xl px-3 border border-transparent focus-within:border-primary-container transition-all">
+            <div className="flex items-center flex-1 h-11 bg-[#14141a] rounded-xl px-3 border border-white/5 focus-within:border-indigo-500/80 transition-all">
               <input
                 type="text"
                 value={alias}
                 onChange={(e) => setAlias(e.target.value)}
                 placeholder="Custom alias (optional, e.g. launch)"
-                className="w-full bg-transparent text-xs font-medium text-on-surface placeholder:text-outline focus:outline-none"
+                className="w-full bg-transparent text-xs font-medium text-zinc-100 placeholder:text-zinc-500 focus:outline-none"
               />
             </div>
 
             {/* Expiration Dropdown */}
-            <div className="flex items-center h-11 px-3 bg-surface rounded-xl text-on-surface-variant border border-transparent hover:bg-surface-container-high transition-colors">
-              <TimerIcon size={18} className="mr-1.5 text-outline" />
+            <div className="flex items-center h-11 px-3 bg-[#14141a] rounded-xl text-zinc-400 border border-white/5 hover:bg-[#1a1a24] transition-colors">
+              <TimerIcon size={18} className="mr-1.5 text-zinc-500" />
               <select
                 value={expiryDays}
                 onChange={(e) => setExpiryDays(e.target.value)}
-                className="bg-transparent text-xs font-medium text-on-surface-variant focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs font-medium text-zinc-300 focus:outline-none cursor-pointer"
               >
-                <option value="0">Never Expire</option>
-                <option value="1">Expire 24h</option>
-                <option value="7">Expire 7d</option>
-                <option value="30">Expire 30d</option>
+                <option value="0" className="bg-zinc-900 text-zinc-200">Never Expire</option>
+                <option value="1" className="bg-zinc-900 text-zinc-200">Expire 24h</option>
+                <option value="7" className="bg-zinc-900 text-zinc-200">Expire 7d</option>
+                <option value="30" className="bg-zinc-900 text-zinc-200">Expire 30d</option>
               </select>
             </div>
 
@@ -181,7 +182,7 @@ export default function Hero({
             <button
               type="submit"
               disabled={isLoading}
-              className="h-11 px-6 rounded-xl bg-primary-container hover:bg-primary active:scale-[0.98] text-on-primary text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-all shrink-0 disabled:opacity-50"
+              className="h-11 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(99,102,241,0.4)] border border-indigo-400/30 transition-all shrink-0 disabled:opacity-50"
             >
               {isLoading ? (
                 <RefreshIcon size={18} className="animate-spin" />
@@ -194,40 +195,39 @@ export default function Hero({
         </form>
 
         {error && (
-          <div className="mt-2.5 p-2.5 rounded-lg bg-error-container/40 border border-error-container text-on-error-container text-xs flex items-center gap-2">
-            <ErrorIcon size={16} className="text-error" />
+          <div className="mt-2.5 p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center gap-2">
+            <ErrorIcon size={16} className="text-red-400" />
             <span>{error}</span>
           </div>
         )}
       </div>
 
       {/* Generated Live Short URL Preview Card */}
-      {/* Generated Live Short URL Preview Card */}
       {latestShort && (
-        <div className="w-full max-w-2xl mt-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/40 p-4 sm:p-5 shadow-sm text-left transition-all">
+        <div className="w-full max-w-2xl mt-4 bg-[#0e0e12]/90 backdrop-blur-xl rounded-2xl border border-white/10 p-4 sm:p-5 shadow-2xl text-left transition-all">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1.5">
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[11px] font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   Ready
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="font-mono text-base sm:text-lg text-primary font-bold tracking-tight select-all truncate">
+                <span className="font-mono text-base sm:text-lg text-indigo-400 font-bold tracking-tight select-all truncate">
                   {latestShort.shortUrl}
                 </span>
                 <a
                   href={latestShort.originalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1 rounded text-outline hover:text-on-surface transition-colors"
+                  className="p-1 rounded text-zinc-500 hover:text-zinc-200 transition-colors"
                   title="Test link destination"
                 >
                   <ExternalLinkIcon size={18} />
                 </a>
               </div>
-              <p className="text-xs text-on-surface-variant truncate mt-1 max-w-md">
+              <p className="text-xs text-zinc-400 truncate mt-1 max-w-md">
                 {latestShort.originalUrl}
               </p>
             </div>
@@ -237,7 +237,7 @@ export default function Hero({
               <button
                 onClick={handleCopy}
                 type="button"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary-container text-on-primary text-xs font-semibold hover:bg-primary transition-all active:scale-95 shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 shadow-[0_0_16px_rgba(99,102,241,0.35)] border border-indigo-400/20 transition-all active:scale-95"
               >
                 {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
                 <span>{copied ? "Copied!" : "Copy"}</span>
@@ -251,7 +251,7 @@ export default function Hero({
                   }
                   type="button"
                   title="Generate QR Code"
-                  className="p-2 rounded-xl bg-surface-container border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  className="p-2 rounded-xl bg-[#14141a] border border-white/10 text-zinc-300 hover:bg-[#1c1c26] hover:text-white transition-colors"
                 >
                   <QrCodeIcon size={18} />
                 </button>
@@ -264,7 +264,7 @@ export default function Hero({
                   }
                   type="button"
                   title="View Analytics"
-                  className="p-2 rounded-xl bg-surface-container border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
+                  className="p-2 rounded-xl bg-[#14141a] border border-white/10 text-zinc-300 hover:bg-[#1c1c26] hover:text-white transition-colors"
                 >
                   <InsightsIcon size={18} />
                 </button>
@@ -273,9 +273,9 @@ export default function Hero({
           </div>
 
           {!showAuth && (
-            <div className="mt-3 pt-2.5 border-t border-outline-variant/20 flex items-center justify-between text-xs text-on-surface-variant">
+            <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs text-zinc-400">
               <span>Want to view click analytics & QR codes?</span>
-              <a href="/register" className="font-semibold text-primary hover:underline">
+              <a href="/register" className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline">
                 Create free account →
               </a>
             </div>

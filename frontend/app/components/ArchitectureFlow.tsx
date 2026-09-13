@@ -123,10 +123,9 @@ export default function ArchitectureFlow() {
       linkGroup
         .append("path")
         .attr("d", `M ${start.x} ${start.y} L ${end.x} ${end.y}`)
-        .attr("stroke", "#C7C4D8")
-        .attr("stroke-width", 3)
-        .attr("stroke-dasharray", "5,5")
-        .attr("stroke-opacity", 0.4);
+        .attr("stroke", "rgba(255, 255, 255, 0.12)")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "5,5");
 
       // Active pulse track
       linkGroup
@@ -154,18 +153,18 @@ export default function ArchitectureFlow() {
         .append("circle")
         .attr("r", 28)
         .attr("fill", "transparent")
-        .attr("stroke", "#4F46E5")
+        .attr("stroke", "#6366F1")
         .attr("stroke-width", 1.5)
-        .attr("stroke-opacity", 0.3)
+        .attr("stroke-opacity", 0.25)
         .attr("class", "node-outer-ring");
 
       // Inner solid node
       gNode
         .append("circle")
         .attr("r", 20)
-        .attr("fill", "#FAF8FF")
-        .attr("stroke", "#4F46E5")
-        .attr("stroke-width", 2.5)
+        .attr("fill", "#14141A")
+        .attr("stroke", "#6366F1")
+        .attr("stroke-width", 2)
         .attr("class", "node-circle shadow-md");
 
       // Center index text
@@ -174,7 +173,7 @@ export default function ArchitectureFlow() {
         .attr("text-anchor", "middle")
         .attr("dy", ".35em")
         .attr("class", "font-mono font-bold text-xs")
-        .attr("fill", "#4F46E5")
+        .attr("fill", "#818CF8")
         .text(`0${node.id}`);
 
       // Node label
@@ -183,7 +182,7 @@ export default function ArchitectureFlow() {
         .attr("text-anchor", "middle")
         .attr("y", 38)
         .attr("class", "font-sans font-semibold text-[11px]")
-        .attr("fill", "#131B2E")
+        .attr("fill", "#F4F4F5")
         .text(node.label);
 
       // Interactivity
@@ -200,10 +199,10 @@ export default function ArchitectureFlow() {
       gNode.on("mouseleave", function () {
         d3.select(this)
           .select(".node-circle")
-          .attr("fill", "#FAF8FF");
+          .attr("fill", "#14141A");
         d3.select(this)
           .select("text")
-          .attr("fill", "#4F46E5");
+          .attr("fill", "#818CF8");
         setActiveStep(null);
       });
     });
@@ -314,13 +313,13 @@ export default function ArchitectureFlow() {
     >
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
-          <span className="font-mono text-xs uppercase tracking-widest text-primary font-bold px-3 py-1 rounded-full bg-surface-container-high">
+          <span className="font-mono text-xs uppercase tracking-widest text-indigo-400 font-bold px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20">
             D3.JS TELEMETRY ENGINE
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight mt-3">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-100 tracking-tight mt-3">
             Sub-millisecond Telemetry Pipeline
           </h2>
-          <p className="text-sm sm:text-base text-on-surface-variant mt-2 max-w-2xl">
+          <p className="text-sm sm:text-base text-zinc-400 mt-2 max-w-2xl">
             Interactive D3.js vector pipeline illustrating how Linkly decouples redirect latency from analytics logging using Redis RAM caching and asynchronous queue workers.
           </p>
         </div>
@@ -329,7 +328,7 @@ export default function ArchitectureFlow() {
           onClick={handleSimulate}
           disabled={isSimulating}
           type="button"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-container hover:bg-primary text-on-primary text-xs font-bold shadow-xs transition-all active:scale-95 disabled:opacity-50 shrink-0 self-start md:self-auto"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-[0_0_20px_rgba(99,102,241,0.35)] border border-indigo-400/20 transition-all active:scale-95 disabled:opacity-50 shrink-0 self-start md:self-auto"
         >
           {isSimulating ? (
             <RefreshIcon size={18} className="animate-spin" />
@@ -341,7 +340,7 @@ export default function ArchitectureFlow() {
       </div>
 
       {/* D3.js Animated Vector Pipeline (Hidden on mobile, rich on sm+) */}
-      <div className="hidden sm:block w-full bg-surface-container-lowest rounded-3xl border border-outline-variant/40 p-4 mb-6 shadow-xs overflow-hidden">
+      <div className="hidden sm:block w-full bg-[#0e0e12]/80 backdrop-blur-sm rounded-3xl border border-white/10 p-4 mb-6 shadow-xl overflow-hidden">
         <div className="w-full max-w-4xl mx-auto h-[140px]">
           <svg ref={svgRef} className="w-full h-full select-none" />
         </div>
@@ -354,34 +353,34 @@ export default function ArchitectureFlow() {
           return (
             <div
               key={step.id}
-              className={`arch-step-card relative p-5 rounded-2xl bg-surface-container-lowest border transition-all flex flex-col justify-between ${
+              className={`arch-step-card relative p-5 rounded-2xl bg-[#0e0e12]/80 backdrop-blur-sm border transition-all flex flex-col justify-between ${
                 isActive
-                  ? "border-primary-container shadow-md bg-surface-container-low scale-[1.02]"
-                  : "border-outline-variant/40 shadow-xs hover:border-outline-variant"
+                  ? "border-indigo-500 shadow-[0_0_24px_rgba(99,102,241,0.15)] bg-[#14141a] scale-[1.02]"
+                  : "border-white/10 shadow-lg hover:border-indigo-500/40"
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
                     {renderStepIcon(step.icon)}
                   </div>
-                  <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-surface-container-high text-primary">
+                  <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-800 border border-white/5 text-indigo-300">
                     {step.badge}
                   </span>
                 </div>
 
-                <h4 className="text-sm font-bold text-on-surface">{step.title}</h4>
-                <div className="text-[11px] font-semibold text-primary mt-0.5">
+                <h4 className="text-sm font-bold text-zinc-100">{step.title}</h4>
+                <div className="text-[11px] font-semibold text-indigo-400 mt-0.5">
                   {step.sub}
                 </div>
-                <p className="text-xs text-on-surface-variant mt-2 leading-relaxed">
+                <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
                   {step.desc}
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-[11px] font-mono text-outline">
+              <div className="mt-4 pt-3 border-t border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-500">
                 <span>HOP #{step.id}</span>
-                <ArrowRightIcon size={14} className="text-primary" />
+                <ArrowRightIcon size={14} className="text-indigo-400" />
               </div>
             </div>
           );
