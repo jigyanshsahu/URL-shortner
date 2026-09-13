@@ -1,6 +1,6 @@
 {
   "name": "@jigyanshsahu/url-shortener-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fast URL shortener CLI",
   "type": "module",
   "main": "src/index.js",
