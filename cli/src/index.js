@@ -8,7 +8,7 @@ import boxen from "boxen";
 import crypto from "crypto";
 import pool from "./db.js";
 
-const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
+const API_URL = process.env.URL_SHORTENER_API_URL || "http://localhost:5000";
 
 function displayBanner() {
     console.log(
@@ -45,110 +45,26 @@ function normalizeUrl(input) {
     }
 }
 
+
 async function shortenUrl(targetUrl) {
-    const spinner = ora({
-        text: "Connecting to database...",
-        color: "cyan",
-    }).start();
-
-    let client;
+    const spinner = ora("Creating short URL...").start();
     try {
-        client = await pool.connect();
-
-        spinner.text = "Checking database for existing URL...";
-
-        // 1. Check if the URL already exists
-        const existing = await client.query(
-            "SELECT short_code, original_url FROM urls WHERE original_url = $1 LIMIT 1",
-            [targetUrl]
-        );
-
-        if (existing.rows.length > 0) {
-            const shortCode = existing.rows[0].short_code;
-            const shortUrl = `${BASE_URL}/${shortCode}`;
-
-            spinner.succeed(chalk.yellow("URL already shortened!"));
-
-            const boxContent = [
-                `${chalk.bold("Short URL:   ")} ${chalk.cyan.bold(shortUrl)}`,
-                `${chalk.bold("Original:    ")} ${chalk.white(existing.rows[0].original_url)}`,
-                `${chalk.bold("Redirects:   ")} ${chalk.green("Yes (HTTP 302 → Original)")}`,
-            ].join("\n");
-
-            console.log(
-                boxen(boxContent, {
-                    padding: 1,
-                    margin: { top: 0, bottom: 1, left: 1, right: 1 },
-                    borderStyle: "round",
-                    borderColor: "yellow",
-                    title: chalk.yellow.bold(" ⚡ Existing URL Found "),
-                    titleAlignment: "center",
-                })
-            );
-            return;
-        }
-
-        // 2. Generate unique code and insert
-        spinner.text = "Creating short URL...";
-        let shortCode;
-        let attempts = 0;
-        const maxAttempts = 5;
-
-        while (attempts < maxAttempts) {
-            shortCode = generateCode(6);
-            try {
-                const result = await client.query(
-                    `INSERT INTO urls (short_code, original_url)
-                     VALUES ($1, $2)
-                     RETURNING short_code, original_url`,
-                    [shortCode, targetUrl]
-                );
-
-                const shortUrl = `${BASE_URL}/${result.rows[0].short_code}`;
-
-                spinner.succeed(chalk.green("Short URL created successfully!"));
-
-                const boxContent = [
-                    `${chalk.bold("Short URL:   ")} ${chalk.cyan.bold(shortUrl)}`,
-                    `${chalk.bold("Original:    ")} ${chalk.white(result.rows[0].original_url)}`,
-                    `${chalk.bold("Redirects:   ")} ${chalk.green("Yes (HTTP 302 → Original)")}`,
-                ].join("\n");
-
-                console.log(
-                    boxen(boxContent, {
-                        padding: 1,
-                        margin: { top: 0, bottom: 1, left: 1, right: 1 },
-                        borderStyle: "round",
-                        borderColor: "green",
-                        title: chalk.green.bold(" ✓ Short URL Ready "),
-                        titleAlignment: "center",
-                    })
-                );
-                return;
-            } catch (err) {
-                if (err.code === "23505") {
-                    attempts++;
-                } else {
-                    throw err;
-                }
-            }
-        }
-
-        throw new Error("Could not generate a unique short code after multiple attempts.");
-
+        const response = await fetch(`${API_URL}/api/urls/public`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: targetUrl }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Failed to shorten URL");
+        spinner.succeed(chalk.green("Short URL created successfully!"));
+        console.log(boxen(
+            `${chalk.bold("Short URL:   ")} ${chalk.cyan.bold(data.shortUrl)}\n` +
+            `${chalk.bold("Original:    ")} ${chalk.white(data.originalUrl)}`,
+            { padding: 1, borderStyle: "round", borderColor: "green" }
+        ));
     } catch (error) {
         spinner.fail(chalk.red("Failed to shorten URL"));
-        console.error(chalk.red.bold("\n✗ Error: ") + chalk.red(error.message));
-
-        if (error.code === "ECONNREFUSED" || error.message.includes("connect")) {
-            console.error(
-                chalk.yellow("\n💡 Could not connect to PostgreSQL database.") +
-                chalk.gray("\n   Ensure the Docker database container is running:") +
-                chalk.cyan("\n   docker compose -f backend/docker-compose.yml up -d\n")
-            );
-        }
-    } finally {
-        if (client) client.release();
+        console.error(chalk.red(`\n✗ Error: ${error.message}`));
     }
 }
 

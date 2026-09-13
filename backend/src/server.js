@@ -513,6 +513,38 @@ app.get(
         }
     }
 );
+// Public endpoint for CLI / guest shortening
+app.post(
+    "/api/urls/public",
+    rateLimit({ limit: 10, windowSeconds: 60 }),
+    async (req, res) => {
+        try {
+            const { url, alias } = req.body;
+            if (!url) return res.status(400).json({ error: "URL is required" });
+
+            const shortCode = alias || generateCode(6);
+            const result = await pool.query(
+                `INSERT INTO urls (short_code, original_url)
+                 VALUES ($1, $2)
+                 RETURNING short_code, original_url`,
+                [shortCode, url]
+            );
+
+            res.status(201).json({
+                shortUrl: `${process.env.BASE_URL}/${result.rows[0].short_code}`,
+                originalUrl: result.rows[0].original_url,
+                shortCode: result.rows[0].short_code
+            });
+        } catch (error) {
+            if (error.code === "23505") {
+                return res.status(409).json({ error: "Alias is already taken" });
+            }
+            res.status(500).json({ error: "Failed to shorten URL" });
+        }
+    }
+);
+
+
 app.get("/:shortCode", async (req, res) => {
     try {
         const { shortCode } = req.params;
