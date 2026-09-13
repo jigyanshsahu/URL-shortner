@@ -55,8 +55,9 @@ export interface QrCodeResponse {
   qrCode: string; // Base64 data URL
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-const REDIRECT_BASE_URL = process.env.NEXT_PUBLIC_REDIRECT_URL || API_BASE_URL;
+const rawApiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").trim();
+const API_BASE_URL = rawApiUrl.replace(/\/+$/, "").replace(/\/api$/, "");
+const REDIRECT_BASE_URL = (process.env.NEXT_PUBLIC_REDIRECT_URL || API_BASE_URL).trim().replace(/\/+$/, "");
 
 // Storage key for mock links when running in demo/offline mode
 const MOCK_STORAGE_KEY = "shortly_mock_urls";
