@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { fetchUrlAnalytics, UrlAnalytics } from "../lib/api";
+import { fetchUrlAnalytics, UrlAnalytics, getShortUrl } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import D3TimelineChart from "./charts/D3TimelineChart";
 import { InsightsIcon, CloseIcon, RefreshIcon } from "./Icons";
@@ -64,8 +64,8 @@ export default function AnalyticsModal({
                 Link Analytics
               </h3>
             </div>
-            <p className="font-mono text-xs font-semibold text-indigo-400 mt-1">
-              /{shortCode}
+            <p className="font-mono text-xs font-semibold text-indigo-400 mt-1 truncate max-w-md">
+              {getShortUrl(shortCode)}
             </p>
           </div>
           <button

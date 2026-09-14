@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createShortUrl, isValidUrl, ShortenedUrl } from "../lib/api";
+import { createShortUrl, isValidUrl, ShortenedUrl, REDIRECT_BASE_URL } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import {
   LinkIcon,
@@ -154,11 +154,14 @@ export default function Hero({
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
             {/* Custom Alias Input */}
             <div className="flex items-center flex-1 h-11 bg-[#14141a] rounded-xl px-3 border border-white/5 focus-within:border-indigo-500/80 transition-all">
+              <span className="text-zinc-500 font-mono text-xs select-none pr-1 shrink-0">
+                {REDIRECT_BASE_URL}/
+              </span>
               <input
                 type="text"
                 value={alias}
                 onChange={(e) => setAlias(e.target.value)}
-                placeholder="Custom alias (optional, e.g. launch)"
+                placeholder="custom-alias"
                 className="w-full bg-transparent text-xs font-medium text-zinc-100 placeholder:text-zinc-500 focus:outline-none"
               />
             </div>

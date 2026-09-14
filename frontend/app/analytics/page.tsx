@@ -14,7 +14,7 @@ import {
   PublicIcon,
   BoltIcon,
 } from "../components/Icons";
-import { fetchUrls, fetchUrlAnalytics, ShortenedUrl, UrlAnalytics } from "../lib/api";
+import { fetchUrls, fetchUrlAnalytics, ShortenedUrl, UrlAnalytics, getShortUrl } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 
 const fallbackRecentClicks = [
@@ -155,7 +155,7 @@ export default function AnalyticsPage() {
                 <option value="all">All Links (Aggregated)</option>
                 {links.map((l) => (
                   <option key={l.id} value={String(l.id)}>
-                    /{l.short_code} ({l.click_count || 0} clicks)
+                    {getShortUrl(l.short_code)} ({l.click_count || 0} clicks)
                   </option>
                 ))}
               </select>

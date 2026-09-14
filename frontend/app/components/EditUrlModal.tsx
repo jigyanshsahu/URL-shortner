@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { updateUrl, ShortenedUrl, isValidUrl } from "../lib/api";
+import { updateUrl, ShortenedUrl, isValidUrl, REDIRECT_BASE_URL } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { EditIcon, CloseIcon, ErrorIcon, RefreshIcon, CheckIcon } from "./Icons";
 
@@ -95,6 +95,9 @@ function EditUrlForm({
           Custom Alias Slug
         </label>
         <div className="flex items-center h-10 px-3 rounded-xl bg-[#14141a] border border-white/10 focus-within:border-indigo-500/80 transition-all">
+          <span className="text-zinc-500 font-mono text-xs select-none pr-1 shrink-0">
+            {REDIRECT_BASE_URL}/
+          </span>
           <input
             type="text"
             value={alias}

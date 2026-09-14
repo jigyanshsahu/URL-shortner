@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { fetchUrls, deleteUrl, ShortenedUrl } from "../lib/api";
+import { fetchUrls, deleteUrl, ShortenedUrl, getShortUrl, REDIRECT_BASE_URL } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import {
   SearchIcon,
@@ -14,6 +14,7 @@ import {
   TrashIcon,
   RefreshIcon,
   LinkIcon,
+  ExternalLinkIcon,
 } from "./Icons";
 
 interface RecentLinksProps {
@@ -62,8 +63,7 @@ export default function RecentLinks({
   }, [token, refreshTrigger]);
 
   const copyToClipboard = (shortCode: string) => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
-    const fullUrl = `${origin}/${shortCode}`;
+    const fullUrl = getShortUrl(shortCode);
     navigator.clipboard.writeText(fullUrl);
     setCopiedCode(shortCode);
     setTimeout(() => setCopiedCode(null), 2000);
@@ -233,18 +233,32 @@ export default function RecentLinks({
                     >
                       {/* Short URL & alias */}
                       <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 max-w-sm">
                           <button
                             onClick={() => copyToClipboard(item.short_code)}
                             type="button"
-                            title="Copy short link"
-                            className="font-mono text-xs font-bold text-indigo-400 hover:text-indigo-300 hover:underline flex items-center gap-1 group"
+                            title="Click to copy short link"
+                            className="font-mono text-xs font-bold text-indigo-400 hover:text-indigo-300 hover:underline flex items-center gap-1.5 group text-left truncate"
                           >
-                            <span>/{item.short_code}</span>
-                            <span className="text-zinc-500 group-hover:text-indigo-400">
+                            <span className="truncate">
+                              <span className="text-zinc-500 font-normal">
+                                {REDIRECT_BASE_URL}/
+                              </span>
+                              <span>{item.short_code}</span>
+                            </span>
+                            <span className="text-zinc-500 group-hover:text-indigo-400 shrink-0">
                               {isCopied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
                             </span>
                           </button>
+                          <a
+                            href={getShortUrl(item.short_code)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-zinc-500 hover:text-indigo-400 transition-colors shrink-0 p-0.5"
+                            title="Open short link in new tab"
+                          >
+                            <ExternalLinkIcon size={13} />
+                          </a>
                         </div>
                         <div className="text-[11px] text-zinc-500 font-mono mt-0.5 md:hidden truncate max-w-[200px]">
                           {item.original_url}

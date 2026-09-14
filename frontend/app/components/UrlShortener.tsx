@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { createShortUrl, isValidUrl, CreateUrlResponse } from "../lib/api";
+import { createShortUrl, isValidUrl, CreateUrlResponse, REDIRECT_BASE_URL } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import gsap from "gsap";
 
@@ -222,7 +222,7 @@ export default function UrlShortener({
               </label>
               <div className="flex rounded-xl border border-zinc-800 bg-zinc-900/90 overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
                 <span className="flex items-center bg-zinc-800/80 px-3 text-xs text-zinc-400 font-mono border-r border-zinc-700/60">
-                  shortly.app/
+                  {REDIRECT_BASE_URL.replace(/^https?:\/\//, "")}/
                 </span>
                 <input
                   type="text"

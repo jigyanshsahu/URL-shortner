@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { fetchUrlQrCode, QrCodeResponse } from "../lib/api";
+import { fetchUrlQrCode, QrCodeResponse, getShortUrl } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import {
   QrCodeIcon,
@@ -114,9 +114,9 @@ export default function QrModal({
             </div>
           )}
 
-          <div className="mt-4">
-            <span className="font-mono text-xs font-bold text-indigo-400">
-              /{shortCode}
+          <div className="mt-4 max-w-full px-2">
+            <span className="font-mono text-xs font-bold text-indigo-400 truncate block select-all">
+              {qrData?.shortUrl || getShortUrl(shortCode)}
             </span>
           </div>
         </div>

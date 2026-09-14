@@ -175,9 +175,17 @@ app.post("/api/urls", authenticateToken,
             ]
         );
 
+        const shortUrl = `${getBaseUrl()}/${result.rows[0].short_code}`;
+
         res.status(201).json({
             message: "URL shortened successfully",
-            url: result.rows[0]
+            url: {
+                ...result.rows[0],
+                short_url: shortUrl,
+                shortUrl
+            },
+            shortUrl,
+            shortCode: result.rows[0].short_code
         });
 
     } catch (error) {
@@ -201,7 +209,14 @@ app.get("/api/urls", authenticateToken, async (req, res) => {
             [userId]
         );
 
-        res.json(result.rows);
+        const baseUrl = getBaseUrl();
+        const urls = result.rows.map((row) => ({
+            ...row,
+            short_url: `${baseUrl}/${row.short_code}`,
+            shortUrl: `${baseUrl}/${row.short_code}`
+        }));
+
+        res.json(urls);
     } catch (error) {
         console.error("FETCH URLS ERROR:", error);
         res.status(500).json({
@@ -348,9 +363,16 @@ app.put("/api/urls/:id", authenticateToken, async (req, res) => {
             ]
         );
 
+        const shortUrl = `${getBaseUrl()}/${result.rows[0].short_code}`;
+
         res.json({
             message: "URL updated successfully",
-            url: result.rows[0]
+            url: {
+                ...result.rows[0],
+                short_url: shortUrl,
+                shortUrl
+            },
+            shortUrl
         });
 
     } catch (error) {

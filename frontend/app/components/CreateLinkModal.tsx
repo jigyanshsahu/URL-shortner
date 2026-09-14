@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { createShortUrl, isValidUrl, ShortenedUrl } from "../lib/api";
+import { createShortUrl, isValidUrl, ShortenedUrl, REDIRECT_BASE_URL } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import {
   LinkIcon,
@@ -229,11 +229,14 @@ export default function CreateLinkModal({
                 <span className="text-[11px] text-zinc-500 font-normal">Leave blank for random</span>
               </label>
               <div className="flex items-center h-10 rounded-xl bg-[#14141a] border border-white/10 px-3 focus-within:border-indigo-500/80 transition-all">
+                <span className="text-zinc-500 font-mono text-xs select-none pr-1 shrink-0">
+                  {REDIRECT_BASE_URL}/
+                </span>
                 <input
                   type="text"
                   value={alias}
                   onChange={(e) => setAlias(e.target.value)}
-                  placeholder="Custom slug (optional, e.g. campaign)"
+                  placeholder="custom-slug"
                   className="w-full bg-transparent text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none"
                 />
               </div>

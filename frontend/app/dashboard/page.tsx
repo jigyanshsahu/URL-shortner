@@ -21,7 +21,7 @@ import {
   CheckCircleIcon,
   InsightsIcon,
 } from "../components/Icons";
-import { fetchUrls, createShortUrl, ShortenedUrl } from "../lib/api";
+import { fetchUrls, createShortUrl, ShortenedUrl, getShortUrl, REDIRECT_BASE_URL } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 
 const dashboardActivity = [
@@ -115,7 +115,7 @@ export default function DashboardPage() {
         token,
       });
       setQuickMsg({
-        text: `Link created: ${res.shortUrl || '/' + (res.shortCode || quickAlias)}`,
+        text: `Link created: ${res.shortUrl || getShortUrl(res.shortCode || quickAlias)}`,
       });
       setQuickUrl("");
       setQuickAlias("");
@@ -330,12 +330,15 @@ export default function DashboardPage() {
                 />
               </div>
 
-              <div className="flex items-center h-10 px-3 rounded-xl bg-[#14141a] border border-white/10 sm:w-56 focus-within:border-indigo-500/80 transition-all">
+              <div className="flex items-center h-10 px-3 rounded-xl bg-[#14141a] border border-white/10 sm:w-64 focus-within:border-indigo-500/80 transition-all">
+                <span className="text-zinc-500 font-mono text-xs select-none pr-1 shrink-0">
+                  {REDIRECT_BASE_URL}/
+                </span>
                 <input
                   type="text"
                   value={quickAlias}
                   onChange={(e) => setQuickAlias(e.target.value)}
-                  placeholder="Custom alias (optional)"
+                  placeholder="alias (optional)"
                   className="w-full bg-transparent text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none"
                 />
               </div>

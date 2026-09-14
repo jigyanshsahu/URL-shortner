@@ -5,6 +5,8 @@ export interface ShortenedUrl {
   created_at: string;
   expires_at?: string | null;
   click_count: number;
+  short_url?: string;
+  shortUrl?: string;
 }
 
 export interface CreateUrlOptions {
@@ -56,8 +58,17 @@ export interface QrCodeResponse {
 }
 
 const rawApiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").trim();
-const API_BASE_URL = rawApiUrl.replace(/\/+$/, "").replace(/\/api$/, "");
-const REDIRECT_BASE_URL = (process.env.NEXT_PUBLIC_REDIRECT_URL || API_BASE_URL).trim().replace(/\/+$/, "");
+export const API_BASE_URL = rawApiUrl.replace(/\/+$/, "").replace(/\/api$/, "");
+export const REDIRECT_BASE_URL = (process.env.NEXT_PUBLIC_REDIRECT_URL || API_BASE_URL).trim().replace(/\/+$/, "");
+
+export function getShortUrl(shortCodeOrUrl?: string): string {
+  if (!shortCodeOrUrl) return REDIRECT_BASE_URL;
+  if (/^https?:\/\//i.test(shortCodeOrUrl)) {
+    return shortCodeOrUrl;
+  }
+  const cleanCode = shortCodeOrUrl.replace(/^\/+/, "");
+  return `${REDIRECT_BASE_URL}/${cleanCode}`;
+}
 
 // Storage key for mock links when running in demo/offline mode
 const MOCK_STORAGE_KEY = "shortly_mock_urls";
@@ -199,10 +210,11 @@ export async function createShortUrl(
         throw new Error(data.error || "Failed to shorten URL");
       }
 
-      const shortCode = data.url?.short_code || options.alias;
+      const shortCode = data.url?.short_code || data.shortCode || options?.alias;
+      const shortUrl = data.shortUrl || data.url?.short_url || data.url?.shortUrl || `${REDIRECT_BASE_URL}/${shortCode}`;
 
       return {
-        shortUrl: `${REDIRECT_BASE_URL}/${shortCode}`,
+        shortUrl,
         originalUrl: data.url?.original_url || normalized,
         shortCode,
         id: data.url?.id,
@@ -271,7 +283,11 @@ export async function fetchUrls(token?: string | null): Promise<ShortenedUrl[]> 
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data)) {
-          return data;
+          return data.map((item) => ({
+            ...item,
+            short_url: item.short_url || item.shortUrl || getShortUrl(item.short_code),
+            shortUrl: item.shortUrl || item.short_url || getShortUrl(item.short_code),
+          }));
         }
       }
     } catch (err) {
