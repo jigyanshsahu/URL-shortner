@@ -1,0 +1,13 @@
+{
+  "name": "scalable-url-shortener",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx concurrently -n \"backend,frontend\" -c \"blue,magenta\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:worker": "npm --prefix backend run worker",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  }
+}

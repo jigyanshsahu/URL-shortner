@@ -191,6 +191,18 @@ app.post("/api/urls", authenticateToken,
     } catch (error) {
         console.error("CREATE URL ERROR:", error);
 
+        if (error.code === "23503") {
+            return res.status(401).json({
+                error: "User account no longer exists. Please sign in again."
+            });
+        }
+
+        if (error.code === "23505") {
+            return res.status(409).json({
+                error: "Alias or short code already exists"
+            });
+        }
+
         res.status(500).json({
             error: "Failed to create URL"
         });
