@@ -8,6 +8,10 @@
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:worker": "npm --prefix backend run worker",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "docker:lb:up": "docker compose -f docker-compose.lb.yml up -d --build",
+    "docker:lb:down": "docker compose -f docker-compose.lb.yml down",
+    "docker:lb:logs": "docker compose -f docker-compose.lb.yml logs -f",
+    "docker:lb:build": "docker compose -f docker-compose.lb.yml build"
   }
 }
