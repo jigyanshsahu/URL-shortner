@@ -169,7 +169,7 @@ export function isValidUrl(input: string): boolean {
  * Register User API
  */
 export async function registerApi(name: string, email: string, password: string) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+  const response = await fetch(`${getApiBaseUrl()}/api/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),
@@ -186,7 +186,7 @@ export async function registerApi(name: string, email: string, password: string)
  * Login User API
  */
 export async function loginApi(email: string, password: string) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+  const response = await fetch(`${getApiBaseUrl()}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -211,7 +211,7 @@ export async function createShortUrl(
 
   if (!isDemo) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/urls`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/urls`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -293,7 +293,7 @@ export async function fetchUrls(token?: string | null): Promise<ShortenedUrl[]> 
 
   if (!isDemo && token) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/urls`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/urls`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -326,7 +326,7 @@ export async function deleteUrl(id: string | number, token?: string | null): Pro
 
   if (!isDemo && token) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/urls/${id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/urls/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -358,7 +358,7 @@ export async function updateUrl(
 
   if (!isDemo && token) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/urls/${id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/urls/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -403,7 +403,7 @@ export async function fetchUrlAnalytics(
 
   if (!isDemo && token) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/urls/${id}/analytics`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/urls/${id}/analytics`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -485,7 +485,7 @@ export async function fetchUrlQrCode(
 
   if (!isDemo && token) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/urls/${id}/qr`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/urls/${id}/qr`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
