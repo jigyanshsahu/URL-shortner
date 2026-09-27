@@ -58,10 +58,11 @@ export interface QrCodeResponse {
 }
 
 export function getApiBaseUrl(): string {
-  if (typeof window !== "undefined" && window.location?.origin) {
-    return window.location.origin;
+  if (typeof window !== "undefined") {
+    // In browser, use relative URL ("") so calls to /api/* automatically use the current origin
+    return "";
   }
-  const rawApiUrl = (process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || "http://localhost").trim();
+  const rawApiUrl = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://backend-1:5001").trim();
   return rawApiUrl.replace(/\/+$/, "").replace(/\/api$/, "");
 }
 
@@ -69,16 +70,14 @@ export function getRedirectBaseUrl(): string {
   if (typeof window !== "undefined" && window.location?.origin) {
     return window.location.origin;
   }
-  return (process.env.NEXT_PUBLIC_REDIRECT_URL || getApiBaseUrl()).trim().replace(/\/+$/, "");
+  return (process.env.NEXT_PUBLIC_REDIRECT_URL || "http://localhost").trim().replace(/\/+$/, "");
 }
 
-export const API_BASE_URL = typeof window !== "undefined" && window.location?.origin
-  ? window.location.origin
-  : (process.env.NEXT_PUBLIC_API_URL || "http://localhost").trim().replace(/\/+$/, "").replace(/\/api$/, "");
+export const API_BASE_URL = typeof window !== "undefined" ? "" : (process.env.BACKEND_URL || "http://backend-1:5001");
 
 export const REDIRECT_BASE_URL = typeof window !== "undefined" && window.location?.origin
   ? window.location.origin
-  : (process.env.NEXT_PUBLIC_REDIRECT_URL || API_BASE_URL).trim().replace(/\/+$/, "");
+  : (process.env.NEXT_PUBLIC_REDIRECT_URL || "http://localhost").trim().replace(/\/+$/, "");
 
 export function getShortUrl(shortCodeOrUrl?: string): string {
   const base = getRedirectBaseUrl();
