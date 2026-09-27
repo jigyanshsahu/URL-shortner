@@ -191,6 +191,18 @@ app.post("/api/urls", authenticateToken,
     } catch (error) {
         console.error("CREATE URL ERROR:", error);
 
+        if (error.code === "23503") {
+            return res.status(401).json({
+                error: "User account no longer exists. Please sign in again."
+            });
+        }
+
+        if (error.code === "23505") {
+            return res.status(409).json({
+                error: "Alias or short code already exists"
+            });
+        }
+
         res.status(500).json({
             error: "Failed to create URL"
         });
@@ -230,19 +242,26 @@ app.delete("/api/urls/:id", authenticateToken, async (req, res) => {
         const { id } = req.params;
         const userId = req.user.userId;
 
+        if (!/^\d+$/.test(id)) {
+            return res.status(404).json({
+                error: "URL not found"
+            });
+        }
+
         const result = await pool.query(
             `DELETE FROM urls
              WHERE id = $1 AND user_id = $2
              RETURNING id, short_code, original_url`,
             [id, userId]
         );
-        await redis.del(`url:${result.rows[0].short_code}`);
 
         if (result.rows.length === 0) {
             return res.status(404).json({
                 error: "URL not found"
             });
         }
+
+        await redis.del(`url:${result.rows[0].short_code}`);
 
         res.json({
             message: "URL deleted successfully",
@@ -262,6 +281,12 @@ app.put("/api/urls/:id", authenticateToken, async (req, res) => {
         const { id } = req.params;
         const { url, expiresAt, alias } = req.body;
         const userId = req.user.userId;
+
+        if (!/^\d+$/.test(id)) {
+            return res.status(404).json({
+                error: "URL not found"
+            });
+        }
 
         if (!url) {
             return res.status(400).json({
@@ -365,6 +390,11 @@ app.put("/api/urls/:id", authenticateToken, async (req, res) => {
 
         const shortUrl = `${getBaseUrl()}/${result.rows[0].short_code}`;
 
+        await redis.del(`url:${currentUrl.rows[0].short_code}`);
+        if (shortCode !== currentUrl.rows[0].short_code) {
+            await redis.del(`url:${shortCode}`);
+        }
+
         res.json({
             message: "URL updated successfully",
             url: {
@@ -390,6 +420,12 @@ app.get(
         try {
             const { id } = req.params;
             const userId = req.user.userId;
+
+            if (!/^\d+$/.test(id)) {
+                return res.status(404).json({
+                    error: "URL not found"
+                });
+            }
 
             // Check ownership
             const urlResult = await pool.query(
@@ -501,6 +537,12 @@ app.get(
         try {
             const { id } = req.params;
             const userId = req.user.userId;
+
+            if (!/^\d+$/.test(id)) {
+                return res.status(404).json({
+                    error: "URL not found"
+                });
+            }
 
             // Make sure this URL belongs to the logged-in user
             const result = await pool.query(

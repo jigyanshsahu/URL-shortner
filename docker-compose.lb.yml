@@ -1,0 +1,154 @@
+name: scalable-url-shortener-lb
+
+# =====================================================================
+# Full production-style stack with Nginx load balancer
+#
+# Architecture:
+#   Browser → Nginx :80 → backend-1 | backend-2 | backend-3
+#                       → frontend (Next.js)
+#
+# Start:  docker compose -f docker-compose.lb.yml up -d --build
+# Stop:   docker compose -f docker-compose.lb.yml down
+# Logs:   docker compose -f docker-compose.lb.yml logs -f
+# Scale:  edit the backend-* services below
+# =====================================================================
+
+networks:
+  url-shortener-net:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:
+
+# ------------------------------------------------------------------
+# Reusable backend config (YAML anchor)
+# ------------------------------------------------------------------
+x-backend-base: &backend-base
+  build:
+    context: ./backend
+    dockerfile: Dockerfile
+  env_file:
+    - ./backend/.env.docker
+  networks:
+    - url-shortener-net
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+
+  # ----------------------------------------------------------------
+  # Infrastructure: PostgreSQL
+  # ----------------------------------------------------------------
+  postgres:
+    image: postgres:17-alpine
+    container_name: url-shortener-lb-postgres
+    networks:
+      - url-shortener-net
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: urlshortener
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d urlshortener"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------
+  # Infrastructure: Redis
+  # ----------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: url-shortener-lb-redis
+    networks:
+      - url-shortener-net
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------
+  # Backend replicas  (load-balanced by Nginx)
+  # Each gets its own PORT so Nginx can address them individually.
+  # ----------------------------------------------------------------
+  backend-1:
+    <<: *backend-base
+    container_name: url-shortener-backend-1
+    environment:
+      PORT: 5001
+    expose:
+      - "5001"
+
+  backend-2:
+    <<: *backend-base
+    container_name: url-shortener-backend-2
+    environment:
+      PORT: 5002
+    expose:
+      - "5002"
+
+  backend-3:
+    <<: *backend-base
+    container_name: url-shortener-backend-3
+    environment:
+      PORT: 5003
+    expose:
+      - "5003"
+
+  # ----------------------------------------------------------------
+  # Frontend – Next.js (production build)
+  # Not exposed to host directly; Nginx handles public traffic.
+  # NEXT_PUBLIC_API_URL points to Nginx so browser API calls work.
+  # ----------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: url-shortener-frontend
+    networks:
+      - url-shortener-net
+    environment:
+      # Browser-side fetch calls go through Nginx (port 80)
+      NEXT_PUBLIC_API_URL: http://localhost
+      # Server-side fetch inside the container goes directly to backend pool via Nginx
+      BACKEND_URL: http://backend-1:5001
+    expose:
+      - "3000"
+    depends_on:
+      - backend-1
+      - backend-2
+      - backend-3
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------
+  # Nginx – reverse-proxy + load balancer (only public-facing port)
+  # ----------------------------------------------------------------
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: url-shortener-nginx
+    networks:
+      - url-shortener-net
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend-1
+      - backend-2
+      - backend-3
+    restart: unless-stopped

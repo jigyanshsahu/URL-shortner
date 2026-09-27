@@ -379,7 +379,7 @@ export async function fetchUrlAnalytics(
   id: string | number,
   token?: string | null
 ): Promise<UrlAnalytics> {
-  const isDemo = !token || token.startsWith("demo-");
+  const isDemo = !token || token.startsWith("demo-") || String(id).startsWith("mock-");
 
   if (!isDemo && token) {
     try {

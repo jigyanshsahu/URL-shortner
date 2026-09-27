@@ -33,6 +33,7 @@ export default function LoginForm() {
 
     validators: {
       onSubmit: loginSchema,
+      onBlurAsync: loginSchema,
     },
 
     onSubmit: async ({ value }) => {
