@@ -37,9 +37,13 @@ export default function Hero({
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [origin, setOrigin] = useState("");
 
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
   }, []);
 
   const showAuth = mounted && isAuthenticated;
@@ -155,7 +159,7 @@ export default function Hero({
             {/* Custom Alias Input */}
             <div className="flex items-center flex-1 h-11 bg-[#14141a] rounded-xl px-3 border border-white/5 focus-within:border-indigo-500/80 transition-all">
               <span className="text-zinc-500 font-mono text-xs select-none pr-1 shrink-0">
-                {REDIRECT_BASE_URL}/
+                {mounted && origin ? origin : REDIRECT_BASE_URL}/
               </span>
               <input
                 type="text"
