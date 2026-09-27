@@ -57,17 +57,37 @@ export interface QrCodeResponse {
   qrCode: string; // Base64 data URL
 }
 
-const rawApiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").trim();
-export const API_BASE_URL = rawApiUrl.replace(/\/+$/, "").replace(/\/api$/, "");
-export const REDIRECT_BASE_URL = (process.env.NEXT_PUBLIC_REDIRECT_URL || API_BASE_URL).trim().replace(/\/+$/, "");
+export function getApiBaseUrl(): string {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+  const rawApiUrl = (process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || "http://localhost").trim();
+  return rawApiUrl.replace(/\/+$/, "").replace(/\/api$/, "");
+}
+
+export function getRedirectBaseUrl(): string {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+  return (process.env.NEXT_PUBLIC_REDIRECT_URL || getApiBaseUrl()).trim().replace(/\/+$/, "");
+}
+
+export const API_BASE_URL = typeof window !== "undefined" && window.location?.origin
+  ? window.location.origin
+  : (process.env.NEXT_PUBLIC_API_URL || "http://localhost").trim().replace(/\/+$/, "").replace(/\/api$/, "");
+
+export const REDIRECT_BASE_URL = typeof window !== "undefined" && window.location?.origin
+  ? window.location.origin
+  : (process.env.NEXT_PUBLIC_REDIRECT_URL || API_BASE_URL).trim().replace(/\/+$/, "");
 
 export function getShortUrl(shortCodeOrUrl?: string): string {
-  if (!shortCodeOrUrl) return REDIRECT_BASE_URL;
+  const base = getRedirectBaseUrl();
+  if (!shortCodeOrUrl) return base;
   if (/^https?:\/\//i.test(shortCodeOrUrl)) {
     return shortCodeOrUrl;
   }
   const cleanCode = shortCodeOrUrl.replace(/^\/+/, "");
-  return `${REDIRECT_BASE_URL}/${cleanCode}`;
+  return `${base}/${cleanCode}`;
 }
 
 // Storage key for mock links when running in demo/offline mode
