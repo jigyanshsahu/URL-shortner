@@ -12,7 +12,8 @@ const connectionString = process.env.DATABASE_URL;
 const isLocal =
     !connectionString ||
     connectionString.includes("localhost") ||
-    connectionString.includes("127.0.0.1");
+    connectionString.includes("127.0.0.1") ||
+    connectionString.includes("@postgres:");
 
 const pool = new Pool({
     connectionString,
