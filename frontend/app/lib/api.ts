@@ -59,7 +59,10 @@ export interface QrCodeResponse {
 
 export function getApiBaseUrl(): string {
   if (typeof window !== "undefined") {
-    // In browser, use relative URL ("") so calls to /api/* automatically use the current origin
+    const clientApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+    if (clientApiUrl) {
+      return clientApiUrl.replace(/\/+$/, "").replace(/\/api$/, "");
+    }
     return "";
   }
   const rawApiUrl = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://backend-1:5001").trim();
@@ -73,7 +76,9 @@ export function getRedirectBaseUrl(): string {
   return (process.env.NEXT_PUBLIC_REDIRECT_URL || "http://localhost").trim().replace(/\/+$/, "");
 }
 
-export const API_BASE_URL = typeof window !== "undefined" ? "" : (process.env.BACKEND_URL || "http://backend-1:5001");
+export const API_BASE_URL = typeof window !== "undefined"
+  ? (process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/+$/, "").replace(/\/api$/, "") || "")
+  : (process.env.BACKEND_URL || "http://backend-1:5001");
 
 export const REDIRECT_BASE_URL = typeof window !== "undefined" && window.location?.origin
   ? window.location.origin
@@ -165,6 +170,45 @@ export function isValidUrl(input: string): boolean {
 }
 
 /**
+ * Safely parse JSON response from fetch, handling non-JSON/HTML error pages gracefully
+ */
+async function parseJsonResponse<T = any>(response: Response): Promise<T> {
+  const contentType = response.headers.get("content-type") || "";
+  const rawText = await response.text();
+
+  let data: any = null;
+
+  if (rawText && rawText.trim()) {
+    if (contentType.includes("application/json") || rawText.trim().startsWith("{") || rawText.trim().startsWith("[")) {
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = null;
+      }
+    }
+  }
+
+  if (!response.ok) {
+    if (data && (data.error || data.message)) {
+      throw new Error(data.error || data.message);
+    }
+    if (rawText.trim().startsWith("<")) {
+      throw new Error(`API Endpoint returning HTML (${response.status} ${response.statusText}). Check if backend server is running and API URL is correct.`);
+    }
+    throw new Error(`Request failed with status ${response.status} (${response.statusText})`);
+  }
+
+  if (data === null) {
+    if (rawText.trim().startsWith("<")) {
+      throw new Error(`Server returned HTML instead of expected JSON (${response.status} ${response.statusText}).`);
+    }
+    throw new Error(`Invalid or empty JSON response from server (${response.status})`);
+  }
+
+  return data as T;
+}
+
+/**
  * Register User API
  */
 export async function registerApi(name: string, email: string, password: string) {
@@ -174,11 +218,7 @@ export async function registerApi(name: string, email: string, password: string)
     body: JSON.stringify({ name, email, password }),
   });
 
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || "Registration failed");
-  }
-  return data;
+  return await parseJsonResponse(response);
 }
 
 /**
@@ -191,11 +231,7 @@ export async function loginApi(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   });
 
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || "Invalid email or password");
-  }
-  return data;
+  return await parseJsonResponse(response);
 }
 
 /**
@@ -223,11 +259,7 @@ export async function createShortUrl(
         }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to shorten URL");
-      }
+      const data = await parseJsonResponse(response);
 
       const shortCode = data.url?.short_code || data.shortCode || options?.alias;
       const shortUrl = data.shortUrl || data.url?.short_url || data.url?.shortUrl || `${REDIRECT_BASE_URL}/${shortCode}`;
@@ -300,7 +332,7 @@ export async function fetchUrls(token?: string | null): Promise<ShortenedUrl[]> 
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         if (Array.isArray(data)) {
           return data.map((item) => ({
             ...item,
@@ -366,10 +398,7 @@ export async function updateUrl(
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to update URL");
-      }
+      const data = await parseJsonResponse(response);
       return data.url;
     } catch (err) {
       console.warn("Update API error, using local fallback:", err);
@@ -410,7 +439,7 @@ export async function fetchUrlAnalytics(
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         return data;
       }
     } catch (err) {
@@ -491,7 +520,7 @@ export async function fetchUrlQrCode(
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         return data;
       }
     } catch (err) {
