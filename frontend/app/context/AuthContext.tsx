@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { getApiBaseUrl } from "../lib/api";
 
 export interface User {
   id: number | string;
@@ -56,12 +57,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     setToken(null);
     setUser(null);
     try {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
+      // Fire and forget logout to clear cookie
+      fetch(`${getApiBaseUrl()}/api/auth/logout`, { method: "POST", credentials: "include" }).catch(() => {});
     } catch (e) {
       console.warn("Failed to clear auth state:", e);
     }

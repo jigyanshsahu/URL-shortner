@@ -4,7 +4,11 @@ import pool from "../db.js";
 async function authenticateToken(req, res, next) {
     const authHeader = req.headers.authorization;
 
-    const token = authHeader?.split(" ")[1];
+    let token = authHeader?.split(" ")[1];
+    
+    if (!token && req.cookies && req.cookies.token) {
+        token = req.cookies.token;
+    }
 
     if (!token) {
         return res.status(401).json({

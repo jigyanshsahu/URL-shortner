@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cron from "node-cron";
 import pool from "./db.js";
@@ -20,9 +21,12 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 dotenv.config();
 const app = express();
 const getBaseUrl = () => (process.env.BASE_URL || "http://localhost:5000").replace(/\/+$/, "");
-app.use(cors());
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use(express.json());
-
+app.use(cookieParser());
 app.use(
     "/api/auth/login",
     rateLimit({

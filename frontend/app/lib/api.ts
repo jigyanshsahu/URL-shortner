@@ -214,7 +214,7 @@ async function parseJsonResponse<T = any>(response: Response): Promise<T> {
 export async function registerApi(name: string, email: string, password: string) {
   const response = await fetch(`${getApiBaseUrl()}/api/auth/register`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    credentials: "include", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),
   });
 
@@ -227,7 +227,7 @@ export async function registerApi(name: string, email: string, password: string)
 export async function loginApi(email: string, password: string) {
   const response = await fetch(`${getApiBaseUrl()}/api/auth/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    credentials: "include", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
 
@@ -248,7 +248,7 @@ export async function createShortUrl(
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/urls`, {
         method: "POST",
-        headers: {
+        credentials: "include", headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${options.token}`,
         },
@@ -325,7 +325,7 @@ export async function fetchUrls(token?: string | null): Promise<ShortenedUrl[]> 
   if (!isDemo && token) {
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/urls`, {
-        headers: {
+        credentials: "include", headers: {
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
@@ -359,7 +359,7 @@ export async function deleteUrl(id: string | number, token?: string | null): Pro
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/urls/${id}`, {
         method: "DELETE",
-        headers: {
+        credentials: "include", headers: {
           Authorization: `Bearer ${token}`,
         },
       });
@@ -391,7 +391,7 @@ export async function updateUrl(
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/urls/${id}`, {
         method: "PUT",
-        headers: {
+        credentials: "include", headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
@@ -432,7 +432,7 @@ export async function fetchUrlAnalytics(
   if (!isDemo && token) {
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/urls/${id}/analytics`, {
-        headers: {
+        credentials: "include", headers: {
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
@@ -514,7 +514,7 @@ export async function fetchUrlQrCode(
   if (!isDemo && token) {
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/urls/${id}/qr`, {
-        headers: {
+        credentials: "include", headers: {
           Authorization: `Bearer ${token}`,
         },
       });
@@ -539,3 +539,6 @@ export async function fetchUrlQrCode(
     qrCode: qrCodeUrl,
   };
 }
+export async function logoutApi() { await fetch(getApiBaseUrl() + '/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {}); }
+
+
