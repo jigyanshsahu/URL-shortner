@@ -7,12 +7,20 @@ const backendUrl = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL |
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${backendUrl}/api/:path*`,
-      },
-    ];
+    return {
+      fallback: [
+        {
+          source: "/:shortCode",
+          destination: `${backendUrl}/:shortCode`,
+        },
+      ],
+      afterFiles: [
+        {
+          source: "/api/:path*",
+          destination: `${backendUrl}/api/:path*`,
+        },
+      ],
+    };
   },
 };
 
