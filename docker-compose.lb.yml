@@ -69,6 +69,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: url-shortener-lb-redis
+    ports:
+      - "6379:6379"
     networks:
       - url-shortener-net
     volumes:

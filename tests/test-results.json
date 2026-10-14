@@ -1,0 +1,267 @@
+{
+  "timestamp": "2026-10-14T04:37:37.881Z",
+  "summary": {
+    "totalDuration": "81.0s",
+    "timestamp": "2026-10-14T04:38:58.858Z",
+    "target": "http://localhost",
+    "architecture": "Nginx LB → 3 × Express backends → PostgreSQL + Redis"
+  },
+  "tests": {
+    "health_connectivity": {
+      "nginx": {
+        "status": "✅ PASS",
+        "statusCode": 200
+      },
+      "api_root": {
+        "status": "✅ PASS",
+        "statusCode": 200
+      },
+      "redis": {
+        "status": "✅ PASS",
+        "response": "PONG"
+      },
+      "postgres": {
+        "status": "✅ PASS",
+        "statusCode": 200
+      },
+      "backends_reachable": {
+        "status": "✅ PASS",
+        "details": "All requests routed through Nginx LB"
+      }
+    },
+    "api_correctness": {
+      "create_url": {
+        "status": "✅ PASS",
+        "statusCode": 201,
+        "shortCode": "test1791952658171"
+      },
+      "create_url_no_auth": {
+        "status": "✅ PASS",
+        "statusCode": 401
+      },
+      "create_url_no_body": {
+        "status": "✅ PASS",
+        "statusCode": 400
+      },
+      "list_urls": {
+        "status": "✅ PASS",
+        "statusCode": 200,
+        "count": 1
+      },
+      "public_url_create": {
+        "status": "✅ PASS",
+        "statusCode": 201
+      },
+      "redirect": {
+        "status": "✅ PASS",
+        "statusCode": 302,
+        "location": "https://www.google.com"
+      },
+      "unknown_code_404": {
+        "status": "✅ PASS",
+        "statusCode": 404
+      },
+      "duplicate_alias": {
+        "status": "✅ PASS",
+        "statusCode": 409
+      }
+    },
+    "redis_caching": {
+      "cache_population": {
+        "status": "✅ PASS",
+        "before": null,
+        "afterPopulated": true
+      },
+      "cache_hit_vs_miss": {
+        "status": "✅ PASS",
+        "hitLatency": "7.88ms",
+        "missLatency": "6.15ms",
+        "improvement": "-28.1% faster on HIT"
+      },
+      "cache_ttl": {
+        "status": "✅ PASS",
+        "ttlSeconds": 3599,
+        "detail": "TTL = 3599s"
+      },
+      "cache_invalidation_refetch": {
+        "status": "✅ PASS",
+        "deletedFromCache": true,
+        "repopulatedAfterAccess": true
+      },
+      "redis_key_count": {
+        "status": "ℹ️ INFO",
+        "totalKeys": 13
+      }
+    },
+    "rate_limiting": {
+      "rate_limit_triggers": {
+        "status": "✅ PASS",
+        "requestsBeforeLimit": 6,
+        "hitRateLimit": true,
+        "headers": {
+          "retryAfter": 60
+        },
+        "detail": "Rate limited after 6 requests"
+      },
+      "rate_limit_headers": {
+        "status": "✅ PASS",
+        "limit": "20",
+        "remaining": "7"
+      }
+    },
+    "load_balancer": {
+      "distribution_success": {
+        "status": "✅ PASS",
+        "totalRequests": 60,
+        "successfulResponses": 60,
+        "failedResponses": 0
+      },
+      "response_time_uniformity": {
+        "status": "✅ PASS",
+        "avgLatency": "1.80ms",
+        "stddev": "0.21ms",
+        "p50": "1.73ms",
+        "p95": "2.43ms",
+        "detail": "Coefficient of variation: 11.6%"
+      },
+      "nginx_health": {
+        "status": "✅ PASS",
+        "statusCode": 200
+      },
+      "backend_distribution": {
+        "status": "✅ PASS",
+        "backends": {
+          "172.19.0.7:5003": 100,
+          "172.19.0.3:5001": 96,
+          "172.19.0.6:5002": 103,
+          "172.19.0.4:3000": 1
+        },
+        "totalTracked": 300
+      }
+    },
+    "load_test_low": {
+      "status": "✅ PASS",
+      "totalRequests": 46550,
+      "rps": 3103.87,
+      "throughputMBps": "1.04",
+      "latency": {
+        "avg": "15.61ms",
+        "p50": "15ms",
+        "p95": "N/Ams",
+        "p99": "31ms",
+        "max": "109ms"
+      },
+      "errors": 0,
+      "timeouts": 0,
+      "2xx": 0,
+      "3xx": 46550,
+      "4xx": 0,
+      "5xx": 0,
+      "successfulRedirects": 46550,
+      "non2xx": 46550,
+      "connections": 50,
+      "duration": "15s",
+      "testCodes": 5
+    },
+    "load_test_medium": {
+      "status": "✅ PASS",
+      "totalRequests": 102331,
+      "rps": 5117.45,
+      "throughputMBps": "1.72",
+      "latency": {
+        "avg": "38.61ms",
+        "p50": "38ms",
+        "p95": "N/Ams",
+        "p99": "59ms",
+        "max": "492ms"
+      },
+      "errors": 0,
+      "timeouts": 0,
+      "2xx": 0,
+      "3xx": 102331,
+      "4xx": 0,
+      "5xx": 0,
+      "successfulRedirects": 102331,
+      "non2xx": 102331,
+      "connections": 200,
+      "duration": "20s",
+      "testCodes": 5
+    },
+    "load_test_high": {
+      "status": "✅ PASS",
+      "totalRequests": 120114,
+      "rps": 6006.25,
+      "throughputMBps": "2.02",
+      "latency": {
+        "avg": "82.82ms",
+        "p50": "79ms",
+        "p95": "N/Ams",
+        "p99": "116ms",
+        "max": "2070ms"
+      },
+      "errors": 0,
+      "timeouts": 0,
+      "2xx": 0,
+      "3xx": 120114,
+      "4xx": 0,
+      "5xx": 0,
+      "successfulRedirects": 120114,
+      "non2xx": 120114,
+      "connections": 500,
+      "duration": "20s",
+      "testCodes": 5
+    },
+    "concurrency": {
+      "duplicate_alias_race": {
+        "status": "✅ PASS",
+        "totalAttempts": 20,
+        "created": 1,
+        "conflicts": 4,
+        "rateLimited": 15,
+        "errors": 0,
+        "detail": "DB unique constraint correctly allowed 1 creation and prevented duplicates"
+      },
+      "concurrent_reads": {
+        "status": "✅ PASS",
+        "totalRequests": 50,
+        "successfulRedirects": 50,
+        "failures": 0
+      },
+      "parallel_creates": {
+        "status": "✅ PASS",
+        "totalAttempts": 30,
+        "created": 2,
+        "rateLimited": 28,
+        "errors": 0,
+        "detail": "2 created, 28 rate-limited"
+      }
+    },
+    "api_endpoint_load": {
+      "status": "✅ PASS",
+      "totalRequests": 29665,
+      "rps": 2966.8,
+      "latency": {
+        "avg": "16.35ms",
+        "p50": "16ms",
+        "p99": "27ms",
+        "max": "92ms"
+      },
+      "2xx_created": 2,
+      "4xx_rate_limited_or_dup": 29663,
+      "5xx_errors": 0,
+      "errors": 0,
+      "timeouts": 0
+    }
+  },
+  "infra_metrics": {
+    "redis": {
+      "total_commands_processed": "4754469",
+      "keyspace_hits": 1262642,
+      "keyspace_misses": 212212,
+      "hit_ratio": "85.6%",
+      "used_memory_human": "128.68M",
+      "used_memory_peak_human": "146.40M",
+      "mem_fragmentation_ratio": "1.15"
+    }
+  }
+}

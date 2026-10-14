@@ -2,7 +2,9 @@
   "name": "scalable-url-shortener",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
+    "test": "node tests/comprehensive-test.js",
     "dev": "npx concurrently -n \"backend,frontend\" -c \"blue,magenta\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
@@ -13,5 +15,10 @@
     "docker:lb:down": "docker compose -f docker-compose.lb.yml down",
     "docker:lb:logs": "docker compose -f docker-compose.lb.yml logs -f",
     "docker:lb:build": "docker compose -f docker-compose.lb.yml build"
+  },
+  "devDependencies": {
+    "autocannon": "^8.0.0",
+    "pg": "^8.23.1",
+    "redis": "^6.3.0"
   }
 }
