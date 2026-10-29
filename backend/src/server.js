@@ -594,23 +594,65 @@ app.post(
     rateLimit({ limit: 10, windowSeconds: 60 }),
     async (req, res) => {
         try {
-            const { url, alias } = req.body;
+            const { url, alias, expiresAt } = req.body;
             if (!url) return res.status(400).json({ error: "URL is required" });
+
+            // Validate expiration
+            if (expiresAt) {
+                const expirationDate = new Date(expiresAt);
+                if (isNaN(expirationDate.getTime())) {
+                    return res.status(400).json({ error: "Invalid expiration date" });
+                }
+                if (expirationDate <= new Date()) {
+                    return res.status(400).json({ error: "Expiration date must be in the future" });
+                }
+            }
+
+            // Validate custom alias
+            if (alias) {
+                const aliasRegex = /^[a-zA-Z0-9_-]+$/;
+                if (!aliasRegex.test(alias)) {
+                    return res.status(400).json({
+                        error: "Alias can only contain letters, numbers, hyphens and underscores"
+                    });
+                }
+                if (alias.length < 3 || alias.length > 30) {
+                    return res.status(400).json({
+                        error: "Alias must be between 3 and 30 characters"
+                    });
+                }
+                const existing = await pool.query(
+                    "SELECT id FROM urls WHERE short_code = $1",
+                    [alias]
+                );
+                if (existing.rows.length > 0) {
+                    return res.status(409).json({ error: "Alias is already taken" });
+                }
+            }
 
             const shortCode = alias || generateCode(6);
             const result = await pool.query(
-                `INSERT INTO urls (short_code, original_url)
-                 VALUES ($1, $2)
-                 RETURNING short_code, original_url`,
-                [shortCode, url]
+                `INSERT INTO urls (short_code, original_url, expires_at)
+                 VALUES ($1, $2, $3)
+                 RETURNING id, short_code, original_url, expires_at`,
+                [shortCode, url, expiresAt ? new Date(expiresAt) : null]
             );
 
+            const shortUrl = `${getBaseUrl()}/${result.rows[0].short_code}`;
+
             res.status(201).json({
-                shortUrl: `${getBaseUrl()}/${result.rows[0].short_code}`,
+                message: "URL shortened successfully",
+                url: {
+                    ...result.rows[0],
+                    short_url: shortUrl,
+                    shortUrl
+                },
+                shortUrl,
                 originalUrl: result.rows[0].original_url,
                 shortCode: result.rows[0].short_code
             });
         } catch (error) {
+            console.error("PUBLIC SHORTEN ERROR:", error);
             if (error.code === "23505") {
                 return res.status(409).json({ error: "Alias is already taken" });
             }
@@ -619,6 +661,34 @@ app.post(
     }
 );
 
+function renderErrorPage(status, title, description) {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title} — Linkly</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background-color: #09090b; color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .card { width: 100%; max-width: 440px; background: rgba(24, 24, 27, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px 32px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); }
+        .code { font-size: 64px; font-weight: 800; background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; line-height: 1; letter-spacing: -2px; }
+        h1 { font-size: 22px; font-weight: 700; margin: 18px 0 10px; color: #ffffff; }
+        p { font-size: 14px; color: #a1a1aa; line-height: 1.6; margin: 0 0 28px; }
+        a { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; padding: 12px 24px; border-radius: 14px; font-size: 14px; font-weight: 600; text-decoration: none; transition: transform 0.15s, opacity 0.15s; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
+        a:hover { opacity: 0.95; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="code">${status}</div>
+        <h1>${title}</h1>
+        <p>${description}</p>
+        <a href="/">Create a New Short Link &rarr;</a>
+    </div>
+</body>
+</html>`;
+}
 
 app.get("/:shortCode", async (req, res) => {
     try {
@@ -641,6 +711,9 @@ app.get("/:shortCode", async (req, res) => {
             ) {
                 await redis.del(cacheKey);
 
+                if (req.accepts("html")) {
+                    return res.status(410).send(renderErrorPage(410, "Link Expired", "This short URL has reached its expiration date and is no longer active."));
+                }
                 return res.status(410).send(
                     "This short URL has expired"
                 );
@@ -671,6 +744,9 @@ app.get("/:shortCode", async (req, res) => {
         );
 
         if (result.rows.length === 0) {
+            if (req.accepts("html")) {
+                return res.status(404).send(renderErrorPage(404, "Link Not Found", "The short URL you are trying to visit does not exist, was deleted, or was mistyped."));
+            }
             return res.status(404).send(
                 "Short URL not found"
             );
@@ -683,6 +759,9 @@ app.get("/:shortCode", async (req, res) => {
             url.expires_at &&
             new Date(url.expires_at) <= new Date()
         ) {
+            if (req.accepts("html")) {
+                return res.status(410).send(renderErrorPage(410, "Link Expired", "This short URL has reached its expiration date and is no longer active."));
+            }
             return res.status(410).send(
                 "This short URL has expired"
             );
