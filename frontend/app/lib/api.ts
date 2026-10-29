@@ -59,10 +59,9 @@ export interface QrCodeResponse {
 
 export function getApiBaseUrl(): string {
   if (typeof window !== "undefined") {
-    const clientApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
-    if (clientApiUrl) {
-      return clientApiUrl.replace(/\/+$/, "").replace(/\/api$/, "");
-    }
+    // In browser, use relative URL ("") so calls to /api/* automatically route through
+    // Next.js rewrites to the backend on the same origin. This completely avoids cross-origin CORS,
+    // preflight OPTIONS latency, and privacy-browser / Brave Shields blocks on third-party domains.
     return "";
   }
   const rawApiUrl = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://backend-1:5001").trim();
@@ -77,7 +76,7 @@ export function getRedirectBaseUrl(): string {
 }
 
 export const API_BASE_URL = typeof window !== "undefined"
-  ? (process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/+$/, "").replace(/\/api$/, "") || "")
+  ? ""
   : (process.env.BACKEND_URL || "http://backend-1:5001");
 
 export const REDIRECT_BASE_URL = typeof window !== "undefined" && window.location?.origin
@@ -244,102 +243,60 @@ export async function createShortUrl(
   const normalized = normalizeUrl(url);
   const isAuthenticated = Boolean(options?.token && !options.token.startsWith("demo-"));
 
-  try {
-    const endpoint = isAuthenticated
-      ? `${getApiBaseUrl()}/api/urls`
-      : `${getApiBaseUrl()}/api/urls/public`;
+  const endpoint = isAuthenticated
+    ? `${getApiBaseUrl()}/api/urls`
+    : `${getApiBaseUrl()}/api/urls/public`;
 
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-    if (isAuthenticated && options?.token) {
-      headers["Authorization"] = `Bearer ${options.token}`;
-    }
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      credentials: "include",
-      headers,
-      body: JSON.stringify({
-        url: normalized,
-        alias: options?.alias?.trim() || undefined,
-        expiresAt: options?.expiresAt || undefined,
-      }),
-    });
-
-    const data = await parseJsonResponse(response);
-
-    const shortCode = data.url?.short_code || data.shortCode || options?.alias;
-    const shortUrl = `${REDIRECT_BASE_URL}/${shortCode}`;
-
-    const result: CreateUrlResponse = {
-      shortUrl,
-      originalUrl: data.url?.original_url || data.originalUrl || normalized,
-      shortCode,
-      id: data.url?.id || data.id,
-      expiresAt: data.url?.expires_at || data.expiresAt,
-      existing: data.message === "URL already exists",
-      message: data.message || "URL shortened successfully",
-    };
-
-    // Store in browser localStorage so it appears in recent links table for guest/demo
-    if (!isAuthenticated) {
-      const stored = getStoredMockUrls();
-      const newEntry: ShortenedUrl = {
-        id: result.id || `public-${Date.now()}`,
-        short_code: shortCode,
-        original_url: result.originalUrl,
-        created_at: new Date().toISOString(),
-        expires_at: result.expiresAt || null,
-        click_count: 0,
-        short_url: shortUrl,
-        shortUrl,
-      };
-      saveMockUrls([newEntry, ...stored.filter((u) => u.short_code !== shortCode)]);
-    }
-
-    return result;
-  } catch (err) {
-    console.warn("API unavailable or failed, falling back to local mode:", err);
-
-    // Offline fallback only when backend cannot be reached
-    const mockCode = options?.alias?.trim() || Math.random().toString(36).substring(2, 8);
-    const newMockUrl: ShortenedUrl = {
-      id: `mock-${Date.now()}`,
-      short_code: mockCode,
-      original_url: normalized,
-      created_at: new Date().toISOString(),
-      expires_at: options?.expiresAt || null,
-      click_count: 0,
-      short_url: `${REDIRECT_BASE_URL}/${mockCode}`,
-      shortUrl: `${REDIRECT_BASE_URL}/${mockCode}`,
-    };
-
-    const stored = getStoredMockUrls();
-    const existing = stored.find((u) => u.original_url === normalized);
-    if (existing) {
-      return {
-        shortUrl: `${REDIRECT_BASE_URL}/${existing.short_code}`,
-        originalUrl: existing.original_url,
-        shortCode: existing.short_code,
-        id: existing.id,
-        existing: true,
-        message: "URL already exists in your library",
-      };
-    }
-
-    saveMockUrls([newMockUrl, ...stored]);
-
-    return {
-      shortUrl: `${REDIRECT_BASE_URL}/${mockCode}`,
-      originalUrl: normalized,
-      shortCode: mockCode,
-      id: newMockUrl.id,
-      expiresAt: newMockUrl.expires_at,
-      existing: false,
-      message: "URL shortened (offline mode)",
-    };
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (isAuthenticated && options?.token) {
+    headers["Authorization"] = `Bearer ${options.token}`;
   }
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    credentials: "include",
+    headers,
+    body: JSON.stringify({
+      url: normalized,
+      alias: options?.alias?.trim() || undefined,
+      expiresAt: options?.expiresAt || undefined,
+    }),
+  });
+
+  const data = await parseJsonResponse(response);
+
+  const shortCode = data.url?.short_code || data.shortCode || options?.alias;
+  const shortUrl = `${REDIRECT_BASE_URL}/${shortCode}`;
+
+  const result: CreateUrlResponse = {
+    shortUrl,
+    originalUrl: data.url?.original_url || data.originalUrl || normalized,
+    shortCode,
+    id: data.url?.id || data.id,
+    expiresAt: data.url?.expires_at || data.expiresAt,
+    existing: data.message === "URL already exists",
+    message: data.message || "URL shortened successfully",
+  };
+
+  // Store in browser localStorage so it appears in recent links table for guest/demo
+  if (!isAuthenticated) {
+    const stored = getStoredMockUrls();
+    const newEntry: ShortenedUrl = {
+      id: result.id || `public-${Date.now()}`,
+      short_code: shortCode,
+      original_url: result.originalUrl,
+      created_at: new Date().toISOString(),
+      expires_at: result.expiresAt || null,
+      click_count: 0,
+      short_url: shortUrl,
+      shortUrl,
+    };
+    saveMockUrls([newEntry, ...stored.filter((u) => u.short_code !== shortCode)]);
+  }
+
+  return result;
 }
 
 /**
