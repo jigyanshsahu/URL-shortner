@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "bcrypt": "^6.0.0",
-    "bullmq": "^6.3.4",
+    "bullmq": "^6.5.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
