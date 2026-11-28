@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import cron from "node-cron";
+import { createTask } from "node-cron";
 import pool from "./db.js";
 import generateCode from "./utils/generateCode.js";
 import authenticateToken from "./middleware/auth.js";
@@ -49,8 +49,19 @@ app.use(
     })
 );
 app.use("/api/auth", authRoutes);
-cron.schedule("* * * * *", () => {
-    cleanupExpiredUrls();
+
+// node-cron v4: createTask builds a ScheduledTask that is not started on
+// creation (the v3 `scheduled` option was removed), so start it explicitly.
+const cleanupExpiredUrlsTask = createTask(
+    "* * * * *",
+    async () => {
+        await cleanupExpiredUrls();
+    },
+    { name: "cleanup-expired-urls" }
+);
+
+Promise.resolve(cleanupExpiredUrlsTask.start()).catch((error) => {
+    console.error("EXPIRED URL CLEANUP TASK START ERROR:", error);
 });
 app.get("/", (req, res) => {
     res.json({
